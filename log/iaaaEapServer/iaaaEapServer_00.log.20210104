@@ -1,0 +1,11 @@
+2021/01/04 02:22:34: File name: /home/pi/workplace/kdcu/run/log/iaaaEapServer/iaaaEapServer_00.log.20210104
+2021/01/04 02:22:34: created by PID 3301 up since Sun Jan  3 23:11:34 2021
+2021/01/04 02:22:34 TCP_listenThread: New PEER '127.0.0.1:33230'
+2021/01/04 02:22:34 TCP_listenThread: New PEER '127.0.0.1:33232'
+2021/01/04 02:22:34 TCP_receiverThread: PEER_R(127.0.0.1:33230) [6] HELLO !!
+2021/01/04 02:22:34 [PEER] [127.0.0.1:33230] [TCP socket opened]
+2021/01/04 02:22:34 TCP_receiverThread: PEER_R(127.0.0.1:33232) [7] HELLO !!
+2021/01/04 02:22:34 [PEER] [127.0.0.1:33232] [TCP socket opened]
+2021/01/04 02:22:41 TCP_receiverThread: PEER_R(127.0.0.1:33230) [6] BYE !!
+2021/01/04 02:22:44 TCP_receiverThread: PEER_R(127.0.0.1:33232) [7] SELECT TIMEOUT !!
+2021/01/04 02:22:44 TCP_receiverThread: PEER_R(127.0.0.1:33232) [7] BYE !!

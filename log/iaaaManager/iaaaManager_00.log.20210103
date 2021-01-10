@@ -1,0 +1,63 @@
+2021/01/03 22:17:17 Task(0) load start
+2021/01/03 22:17:17 aaa_home = /home/pi/workplace/kdcu/run
+2021/01/03 22:17:17 aaa_conf = /home/pi/workplace/kdcu/run/conf
+2021/01/03 22:17:17 aaa_log = /home/pi/workplace/kdcu/run/log/iaaaManager
+2021/01/03 22:17:17 process_00_config {
+2021/01/03 22:17:17 	proc_path = /home/pi/workplace/kdcu/run/bin/
+2021/01/03 22:17:17 	proc_name = iaaaEapServer
+2021/01/03 22:17:17 	proc_argv0 = -s
+2021/01/03 22:17:17 	proc_argv1 = /home/pi/workplace/kdcu/run
+2021/01/03 22:17:17 }
+2021/01/03 22:17:17 Loading System Tasks.....
+2021/01/03 22:17:17 pmExecute: iaaaEapServer -s /home/pi/workplace/kdcu/run loading start.....
+2021/01/03 22:17:18 pmExecute: pid 1521 completed
+
+2021/01/03 22:17:18 pmExecute: Completed.....
+
+2021/01/03 22:17:18 Loading System Tasks.....done
+2021/01/03 22:17:18 Ready(1520) to Get message.
+
+2021/01/03 22:17:58 pmSigChildHandler: entered
+2021/01/03 22:17:58 signal 17 received sender pid[1521]
+2021/01/03 22:17:58 child was killed:ival[9]
+2021/01/03 22:17:58 PID = 1521
+2021/01/03 22:17:58 Terminated due to the receipt of a signal[9:1521] signal number[9]
+2021/01/03 22:17:58 pmSigChildHandler: left
+2021/01/03 22:18:35 Task(0) load start
+2021/01/03 22:18:35 aaa_home = /home/pi/workplace/kdcu/run
+2021/01/03 22:18:35 aaa_conf = /home/pi/workplace/kdcu/run/conf
+2021/01/03 22:18:35 aaa_log = /home/pi/workplace/kdcu/run/log/iaaaManager
+2021/01/03 22:18:35 process_00_config {
+2021/01/03 22:18:35 	proc_path = /home/pi/workplace/kdcu/run/bin/
+2021/01/03 22:18:35 	proc_name = iaaaEapServer
+2021/01/03 22:18:35 	proc_argv0 = -s
+2021/01/03 22:18:35 	proc_argv1 = /home/pi/workplace/kdcu/run
+2021/01/03 22:18:35 }
+2021/01/03 22:18:35 Loading System Tasks.....
+2021/01/03 22:18:35 pmExecute: iaaaEapServer -s /home/pi/workplace/kdcu/run loading start.....
+2021/01/03 22:18:36 pmExecute: pid 1547 completed
+
+2021/01/03 22:18:36 pmExecute: Completed.....
+
+2021/01/03 22:18:36 Loading System Tasks.....done
+2021/01/03 22:18:36 Ready(1546) to Get message.
+
+2021/01/03 23:11:34 Task(0) load start
+2021/01/03 23:11:34 aaa_home = /home/pi/workplace/kdcu/run
+2021/01/03 23:11:34 aaa_conf = /home/pi/workplace/kdcu/run/conf
+2021/01/03 23:11:34 aaa_log = /home/pi/workplace/kdcu/run/log/iaaaManager
+2021/01/03 23:11:34 process_00_config {
+2021/01/03 23:11:34 	proc_path = /home/pi/workplace/kdcu/run/bin/
+2021/01/03 23:11:34 	proc_name = iaaaEapServer
+2021/01/03 23:11:34 	proc_argv0 = -s
+2021/01/03 23:11:34 	proc_argv1 = /home/pi/workplace/kdcu/run
+2021/01/03 23:11:34 }
+2021/01/03 23:11:34 Loading System Tasks.....
+2021/01/03 23:11:34 pmExecute: iaaaEapServer -s /home/pi/workplace/kdcu/run loading start.....
+2021/01/03 23:11:35 pmExecute: pid 3301 completed
+
+2021/01/03 23:11:35 pmExecute: Completed.....
+
+2021/01/03 23:11:35 Loading System Tasks.....done
+2021/01/03 23:11:35 Ready(3300) to Get message.
+

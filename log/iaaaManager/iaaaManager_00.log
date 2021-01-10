@@ -1,0 +1,57 @@
+2021/01/10 10:44:07 Task(0) load start
+2021/01/10 10:44:07 aaa_home = /home/pi/workplace/kdcu/run
+2021/01/10 10:44:07 aaa_conf = /home/pi/workplace/kdcu/run/conf
+2021/01/10 10:44:07 aaa_log = /home/pi/workplace/kdcu/run/log/iaaaManager
+2021/01/10 10:44:07 process_00_config {
+2021/01/10 10:44:07 	proc_path = /home/pi/workplace/kdcu/run/bin/
+2021/01/10 10:44:07 	proc_name = iaaaEapServer
+2021/01/10 10:44:07 	proc_argv0 = -s
+2021/01/10 10:44:07 	proc_argv1 = /home/pi/workplace/kdcu/run
+2021/01/10 10:44:07 }
+2021/01/10 10:44:07 Loading System Tasks.....
+2021/01/10 10:44:07 pmExecute: iaaaEapServer -s /home/pi/workplace/kdcu/run loading start.....
+2021/01/10 10:44:08 pmExecute: pid 25064 completed
+
+2021/01/10 10:44:08 pmExecute: Completed.....
+
+2021/01/10 10:44:08 Loading System Tasks.....done
+2021/01/10 10:44:08 Ready(25063) to Get message.
+
+2021/01/10 10:46:54 Task(0) load start
+2021/01/10 10:46:54 aaa_home = /home/pi/workplace/kdcu/run
+2021/01/10 10:46:54 aaa_conf = /home/pi/workplace/kdcu/run/conf
+2021/01/10 10:46:54 aaa_log = /home/pi/workplace/kdcu/run/log/iaaaManager
+2021/01/10 10:46:54 process_00_config {
+2021/01/10 10:46:54 	proc_path = /home/pi/workplace/kdcu/run/bin/
+2021/01/10 10:46:54 	proc_name = iaaaEapServer
+2021/01/10 10:46:54 	proc_argv0 = -s
+2021/01/10 10:46:54 	proc_argv1 = /home/pi/workplace/kdcu/run
+2021/01/10 10:46:54 }
+2021/01/10 10:46:54 Loading System Tasks.....
+2021/01/10 10:46:54 pmExecute: iaaaEapServer -s /home/pi/workplace/kdcu/run loading start.....
+2021/01/10 10:46:55 pmExecute: pid 25354 completed
+
+2021/01/10 10:46:55 pmExecute: Completed.....
+
+2021/01/10 10:46:55 Loading System Tasks.....done
+2021/01/10 10:46:55 Ready(25353) to Get message.
+
+2021/01/10 10:48:02 Task(0) load start
+2021/01/10 10:48:02 aaa_home = /home/pi/workplace/kdcu/run
+2021/01/10 10:48:02 aaa_conf = /home/pi/workplace/kdcu/run/conf
+2021/01/10 10:48:02 aaa_log = /home/pi/workplace/kdcu/run/log/iaaaManager
+2021/01/10 10:48:02 process_00_config {
+2021/01/10 10:48:02 	proc_path = /home/pi/workplace/kdcu/run/bin/
+2021/01/10 10:48:02 	proc_name = iaaaEapServer
+2021/01/10 10:48:02 	proc_argv0 = -s
+2021/01/10 10:48:02 	proc_argv1 = /home/pi/workplace/kdcu/run
+2021/01/10 10:48:02 }
+2021/01/10 10:48:02 Loading System Tasks.....
+2021/01/10 10:48:02 pmExecute: iaaaEapServer -s /home/pi/workplace/kdcu/run loading start.....
+2021/01/10 10:48:03 pmExecute: pid 25477 completed
+
+2021/01/10 10:48:03 pmExecute: Completed.....
+
+2021/01/10 10:48:03 Loading System Tasks.....done
+2021/01/10 10:48:03 Ready(25476) to Get message.
+

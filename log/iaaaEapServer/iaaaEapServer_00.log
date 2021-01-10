@@ -1,0 +1,168 @@
+2021/01/10 10:44:07 Task(0) load start
+2021/01/10 10:44:07 aaa_home = /home/pi/workplace/kdcu/run
+2021/01/10 10:44:07 aaa_conf = /home/pi/workplace/kdcu/run/conf
+2021/01/10 10:44:07 aaa_log = /home/pi/workplace/kdcu/run/log/iaaaEapServer
+2021/01/10 10:44:07 aaa_config {
+2021/01/10 10:44:07 	OwnID = 0000000001
+2021/01/10 10:44:07 	OwnSysT = BMT3020000010
+2021/01/10 10:44:07 	OwnMacA = 00-00-00-00-11-11-00-01
+2021/01/10 10:44:07 	OwnFQDN = BMT3020000010.kepco.com
+2021/01/10 10:44:07 	OwnRealm = BMT3020000010.com
+2021/01/10 10:44:07 	OwnBind = 0.0.0.0
+2021/01/10 10:44:07 	OwnProductName = iaaaEapServer_KCMVP_v1.5
+2021/01/10 10:44:07 	OwnPort = 13868
+2021/01/10 10:44:07 	AaaFQDN = KEP8018000001.kepco.com
+2021/01/10 10:44:07 	AaaRealm = kepco.com
+2021/01/10 10:44:07 	AaaKcmvp = no
+2021/01/10 10:44:07 	AaaKcmvpEngineID = eng_kcmvp_mc
+2021/01/10 10:44:07 	TspTimeout = 10
+2021/01/10 10:44:07 	TspWorkers = 2
+2021/01/10 10:44:07 	TlsSupport = yes
+2021/01/10 10:44:07 	TlsVerifyCommonName = no
+2021/01/10 10:44:07 	TlsCAFile = AMICA001.der
+2021/01/10 10:44:07 	TlsRootCAFile = ROOTCA01.der
+2021/01/10 10:44:07 	TlsOwnCertificateFile = BMT3020000010.kepco.com.der
+2021/01/10 10:44:07 	TlsOwnKeyFile = BMT3020000010.kepco.com.key
+2021/01/10 10:44:07 	TlsOwnKeyPassword = s*****
+2021/01/10 10:44:07 	TlsCipherSuiteList = ECDH-ECDSA-ARIA128-GCM-SHA256
+2021/01/10 10:44:07 	TlsSecurityDirectory = /home/pi/workplace/kdcu/run/conf/cert
+2021/01/10 10:44:07 	ActiveAaaNetwork = eap_tls_network
+2021/01/10 10:44:07 	TrapIp = 127.0.0.1
+2021/01/10 10:44:07 	TrapPort = 10000
+2021/01/10 10:44:07 	eap_tls_network {
+2021/01/10 10:44:07 		name = EAP_NETWORK
+2021/01/10 10:44:07 		eap = TLS
+2021/01/10 10:44:07 		mac_addr = 00-00-00-00-11-11-00-01
+2021/01/10 10:44:07 		identity = BMT3020000010@tls.com
+2021/01/10 10:44:07 		ca_cert = /home/pi/workplace/kdcu/run/conf/cert/AMICA001.der
+2021/01/10 10:44:07 		rootca_cert = /home/pi/workplace/kdcu/run/conf/cert/ROOTCA01.der
+2021/01/10 10:44:07 		client_cert = /home/pi/workplace/kdcu/run/conf/cert/BMT3020000010_sign.der
+2021/01/10 10:44:07 		private_key = /home/pi/workplace/kdcu/run/conf/cert/BMT3020000010_sign.key
+2021/01/10 10:44:07 		private_key_passwd = s*****
+2021/01/10 10:44:07 		cipher_list = ECDH-ECDSA-ARIA128-GCM-SHA256
+2021/01/10 10:44:07 	}
+2021/01/10 10:44:07 }
+2021/01/10 10:44:07 cipher_list: ECDH-ECDSA-ARIA128-GCM-SHA256
+2021/01/10 10:44:07 v6_udp_server: Trying to open/bind on 0.0.0.0 port 13868
+2021/01/10 10:44:07 v6_udp_server: Successful socket[4] open/bind on 0.0.0.0 port 13868
+2021/01/10 10:44:07 iaaaAgent: Start the iaaaEapServer
+2021/01/10 10:44:07 TspWorker PEER[1] Start UP.
+2021/01/10 10:44:07 v6_tcp_listen: Trying to open/bind/listen on 0.0.0.0 port 13868
+2021/01/10 10:44:07 v6_tcp_listen: Successful socket[5] open/bind/listen on 0.0.0.0 port 13868
+2021/01/10 10:44:07 AAAOpen: Start the iaaaEapServer
+2021/01/10 10:44:07 TCP_listenThread: socket[5] entered
+2021/01/10 10:44:07 Ready(25064) to Get message.
+
+2021/01/10 10:44:07 TspWorker PEER[0] Start UP.
+2021/01/10 10:46:54 Task(0) load start
+2021/01/10 10:46:54 aaa_home = /home/pi/workplace/kdcu/run
+2021/01/10 10:46:54 aaa_conf = /home/pi/workplace/kdcu/run/conf
+2021/01/10 10:46:54 aaa_log = /home/pi/workplace/kdcu/run/log/iaaaEapServer
+2021/01/10 10:46:54 aaa_config {
+2021/01/10 10:46:54 	OwnID = 0000000001
+2021/01/10 10:46:54 	OwnSysT = BMT3020000010
+2021/01/10 10:46:54 	OwnMacA = 00-00-00-00-11-11-00-01
+2021/01/10 10:46:54 	OwnFQDN = BMT3020000010.kepco.com
+2021/01/10 10:46:54 	OwnRealm = BMT3020000010.com
+2021/01/10 10:46:54 	OwnBind = 0.0.0.0
+2021/01/10 10:46:54 	OwnProductName = iaaaEapServer_KCMVP_v1.5
+2021/01/10 10:46:54 	OwnPort = 13868
+2021/01/10 10:46:54 	AaaFQDN = KEP8018000001.kepco.com
+2021/01/10 10:46:54 	AaaRealm = kepco.com
+2021/01/10 10:46:54 	AaaKcmvp = no
+2021/01/10 10:46:54 	AaaKcmvpEngineID = eng_kcmvp_mc
+2021/01/10 10:46:54 	TspTimeout = 10
+2021/01/10 10:46:54 	TspWorkers = 2
+2021/01/10 10:46:54 	TlsSupport = yes
+2021/01/10 10:46:54 	TlsVerifyCommonName = no
+2021/01/10 10:46:54 	TlsCAFile = AMICA001.der
+2021/01/10 10:46:54 	TlsRootCAFile = ROOTCA01.der
+2021/01/10 10:46:54 	TlsOwnCertificateFile = BMT3020000010.kepco.com.der
+2021/01/10 10:46:54 	TlsOwnKeyFile = BMT3020000010.kepco.com.key
+2021/01/10 10:46:54 	TlsOwnKeyPassword = s*****
+2021/01/10 10:46:54 	TlsCipherSuiteList = ECDH-ECDSA-ARIA128-GCM-SHA256
+2021/01/10 10:46:54 	TlsSecurityDirectory = /home/pi/workplace/kdcu/run/conf/cert
+2021/01/10 10:46:54 	ActiveAaaNetwork = eap_tls_network
+2021/01/10 10:46:54 	TrapIp = 127.0.0.1
+2021/01/10 10:46:54 	TrapPort = 10000
+2021/01/10 10:46:54 	eap_tls_network {
+2021/01/10 10:46:54 		name = EAP_NETWORK
+2021/01/10 10:46:54 		eap = TLS
+2021/01/10 10:46:54 		mac_addr = 00-00-00-00-11-11-00-01
+2021/01/10 10:46:54 		identity = BMT3020000010@tls.com
+2021/01/10 10:46:54 		ca_cert = /home/pi/workplace/kdcu/run/conf/cert/AMICA001.der
+2021/01/10 10:46:54 		rootca_cert = /home/pi/workplace/kdcu/run/conf/cert/ROOTCA01.der
+2021/01/10 10:46:54 		client_cert = /home/pi/workplace/kdcu/run/conf/cert/BMT3020000010_sign.der
+2021/01/10 10:46:54 		private_key = /home/pi/workplace/kdcu/run/conf/cert/BMT3020000010_sign.key
+2021/01/10 10:46:54 		private_key_passwd = s*****
+2021/01/10 10:46:54 		cipher_list = ECDH-ECDSA-ARIA128-GCM-SHA256
+2021/01/10 10:46:54 	}
+2021/01/10 10:46:54 }
+2021/01/10 10:46:54 cipher_list: ECDH-ECDSA-ARIA128-GCM-SHA256
+2021/01/10 10:46:54 v6_udp_server: Trying to open/bind on 0.0.0.0 port 13868
+2021/01/10 10:46:54 v6_udp_server: Successful socket[4] open/bind on 0.0.0.0 port 13868
+2021/01/10 10:46:54 iaaaAgent: Start the iaaaEapServer
+2021/01/10 10:46:54 TspWorker PEER[0] Start UP.
+2021/01/10 10:46:54 TspWorker PEER[1] Start UP.
+2021/01/10 10:46:54 v6_tcp_listen: Trying to open/bind/listen on 0.0.0.0 port 13868
+2021/01/10 10:46:54 v6_tcp_listen: Successful socket[5] open/bind/listen on 0.0.0.0 port 13868
+2021/01/10 10:46:54 AAAOpen: Start the iaaaEapServer
+2021/01/10 10:46:54 TCP_listenThread: socket[5] entered
+2021/01/10 10:46:54 Ready(25354) to Get message.
+
+2021/01/10 10:48:02 Task(0) load start
+2021/01/10 10:48:02 aaa_home = /home/pi/workplace/kdcu/run
+2021/01/10 10:48:02 aaa_conf = /home/pi/workplace/kdcu/run/conf
+2021/01/10 10:48:02 aaa_log = /home/pi/workplace/kdcu/run/log/iaaaEapServer
+2021/01/10 10:48:02 aaa_config {
+2021/01/10 10:48:02 	OwnID = 0000000001
+2021/01/10 10:48:02 	OwnSysT = BMT3020000010
+2021/01/10 10:48:02 	OwnMacA = 00-00-00-00-11-11-00-01
+2021/01/10 10:48:02 	OwnFQDN = BMT3020000010.kepco.com
+2021/01/10 10:48:02 	OwnRealm = BMT3020000010.com
+2021/01/10 10:48:02 	OwnBind = 0.0.0.0
+2021/01/10 10:48:02 	OwnProductName = iaaaEapServer_KCMVP_v1.5
+2021/01/10 10:48:02 	OwnPort = 13868
+2021/01/10 10:48:02 	AaaFQDN = KEP8018000001.kepco.com
+2021/01/10 10:48:02 	AaaRealm = kepco.com
+2021/01/10 10:48:02 	AaaKcmvp = no
+2021/01/10 10:48:02 	AaaKcmvpEngineID = eng_kcmvp_mc
+2021/01/10 10:48:02 	TspTimeout = 10
+2021/01/10 10:48:02 	TspWorkers = 2
+2021/01/10 10:48:02 	TlsSupport = yes
+2021/01/10 10:48:02 	TlsVerifyCommonName = no
+2021/01/10 10:48:02 	TlsCAFile = AMICA001.der
+2021/01/10 10:48:02 	TlsRootCAFile = ROOTCA01.der
+2021/01/10 10:48:02 	TlsOwnCertificateFile = BMT3020000010.kepco.com.der
+2021/01/10 10:48:02 	TlsOwnKeyFile = BMT3020000010.kepco.com.key
+2021/01/10 10:48:02 	TlsOwnKeyPassword = s*****
+2021/01/10 10:48:02 	TlsCipherSuiteList = ECDH-ECDSA-ARIA128-GCM-SHA256
+2021/01/10 10:48:02 	TlsSecurityDirectory = /home/pi/workplace/kdcu/run/conf/cert
+2021/01/10 10:48:02 	ActiveAaaNetwork = eap_tls_network
+2021/01/10 10:48:02 	TrapIp = 127.0.0.1
+2021/01/10 10:48:02 	TrapPort = 10000
+2021/01/10 10:48:02 	eap_tls_network {
+2021/01/10 10:48:02 		name = EAP_NETWORK
+2021/01/10 10:48:02 		eap = TLS
+2021/01/10 10:48:02 		mac_addr = 00-00-00-00-11-11-00-01
+2021/01/10 10:48:02 		identity = BMT3020000010@tls.com
+2021/01/10 10:48:02 		ca_cert = /home/pi/workplace/kdcu/run/conf/cert/AMICA001.der
+2021/01/10 10:48:02 		rootca_cert = /home/pi/workplace/kdcu/run/conf/cert/ROOTCA01.der
+2021/01/10 10:48:02 		client_cert = /home/pi/workplace/kdcu/run/conf/cert/BMT3020000010_sign.der
+2021/01/10 10:48:02 		private_key = /home/pi/workplace/kdcu/run/conf/cert/BMT3020000010_sign.key
+2021/01/10 10:48:02 		private_key_passwd = s*****
+2021/01/10 10:48:02 		cipher_list = ECDH-ECDSA-ARIA128-GCM-SHA256
+2021/01/10 10:48:02 	}
+2021/01/10 10:48:02 }
+2021/01/10 10:48:02 cipher_list: ECDH-ECDSA-ARIA128-GCM-SHA256
+2021/01/10 10:48:02 v6_udp_server: Trying to open/bind on 0.0.0.0 port 13868
+2021/01/10 10:48:02 v6_udp_server: Successful socket[4] open/bind on 0.0.0.0 port 13868
+2021/01/10 10:48:02 iaaaAgent: Start the iaaaEapServer
+2021/01/10 10:48:02 TspWorker PEER[1] Start UP.
+2021/01/10 10:48:02 v6_tcp_listen: Trying to open/bind/listen on 0.0.0.0 port 13868
+2021/01/10 10:48:02 v6_tcp_listen: Successful socket[5] open/bind/listen on 0.0.0.0 port 13868
+2021/01/10 10:48:02 AAAOpen: Start the iaaaEapServer
+2021/01/10 10:48:02 Ready(25477) to Get message.
+
+2021/01/10 10:48:02 TCP_listenThread: socket[5] entered
+2021/01/10 10:48:02 TspWorker PEER[0] Start UP.
