@@ -28,7 +28,8 @@ typedef union VersionMsgLen {
 } VERSION_MSGLEN;
 
 typedef struct SecurityAgentHeader {
-  VERSION_MSGLEN verMsgLen;
+  //VERSION_MSGLEN verMsgLen;
+  unsigned int verMsgLen;
   unsigned int commandCode;
   unsigned int transactionId;
 } SECURITY_AGENT_HEADER;
@@ -47,7 +48,7 @@ typedef struct RequestMsgAthentication {
   unsigned char sysT[8];
   char dcuId[10];
   unsigned char aaaIP[16];
-  unsigned int aaaPort; // 4bytes
+  unsigned char aaaPort[4]; // 4bytes
   unsigned char authReqType;
   char callingStationId[23];
 } REQ_MSG_AUTHENTICATION, *REQ_MSG_AUTHENTICATION_PTR;
@@ -79,6 +80,8 @@ int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsign
     LOG_ERROR("pMessage is null");
     return -1;
   }
+  *ppOutMsg = pMessage;
+  *outMsgLen = sizeof(REQ_MSG_AUTHENTICATION);
   LOG_DEBUG("makeRequestMsgAuthentication is called.");
 
   // SysT
@@ -120,6 +123,7 @@ int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsign
 
   memcpy(&pMessage[39], pCallingStationId, CALLING_STATTION_ID_LEN); 
 
+  LOG_DEBUG("\nsending data >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
   for(int i=0; i < REQ_AUTH_LEN; i++) {
     printf("%02x ", pMessage[i]);
   }
@@ -157,7 +161,7 @@ void* threadRecv(void* obj) {
 
       //소켓 생성
   if((gServerSocket = socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
-      perror("socket fail");
+      LOG_DEBUG("socket fail");
       exit(0);
   }
     
@@ -166,42 +170,46 @@ void* threadRecv(void* obj) {
   memset(&servaddr, 0, addrlen); //bzero((char *)&servaddr,addrlen);
   servaddr.sin_family = AF_INET;
   servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  LOG_DEBUG("UDP Server PORT = %d", serverPort);
   servaddr.sin_port = htons(serverPort); //argv[1]에서 port 번호 가지고 옴
 
   // 서버 로컬 주소로 bind()
   if(bind(gServerSocket, (struct sockaddr *)&servaddr, addrlen) < 0) {
-      perror("bind fail");
+      LOG_DEBUG("bind fail");
       exit(0);
   }
 
   while(1)
   {
-    LOG_DEBUG("Server : waiting request [gServerSocket=%d].", gServerSocket);
+    //LOG_DEBUG("Server : waiting request [gServerSocket=%d].", gServerSocket);
     //전송 받은 메시지 nbyte 저장
     nbyte = recvfrom(gServerSocket, buf, MAXLINE , 0, (struct sockaddr *)&cliaddr, &addrlen);
-    LOG_DEBUG("Server : waiting request [gServerSocket2=%d].", gServerSocket);
+    //LOG_DEBUG("Server : waiting request [gServerSocket2=%d].", gServerSocket);
     if(nbyte < 0) {
-      perror("recvfrom fail");
+      LOG_ERROR("recvfrom fail");
       exit(1);
     }
     buf[nbyte] = 0; //마지막 값에 0
-    printf("\nHeader ++++++++++++++++++++++++++++\n");
+    LOG_DEBUG("\nrecived data <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     for(i = 0; i < nbyte; i++) {
+      #if 0
       if(headEnd != 1 && gHeaderFormat[i].startPos == 1 && gHeaderFormat[i].startPos != -1) {
-        printf("\n20%s : ", gHeaderFormat[i].headerName);
+        printf("%20s : ", gHeaderFormat[i].headerName);
       }
       if(headEnd != 1 && gHeaderFormat[i].startPos == -1) {
-        printf("\npayload +++++++++++++++++++++++\n");
+        LOG_DEBUG("\npayload +++++++++++++++++++++++\n");
         headEnd = 1;
       }
-      printf("02%x ", (unsigned char)buf[i]);
+      #endif
+      printf("%02x ", (unsigned char)buf[i]);
     }
+    printf("\n\n");
   }
   
   return NULL;
 }
 
-void createThreadRecv(int* port) {
+void createThreadRecv(int port) {
   int thr_id = 0;
   pthread_t threadT;
   pthread_attr_t thread_attr;
@@ -210,7 +218,7 @@ void createThreadRecv(int* port) {
 
   thr_id = pthread_create(&threadT, &thread_attr, threadRecv, (void*)port);
   if (thr_id < 0) {
-    printf("pthread_create(...,threadCheckEasySetupTimeOut,...) is error");
+    LOG_ERROR("pthread_create(...,threadRecv,...) is error");
   }
   pthread_attr_destroy(&thread_attr);
 }
@@ -223,7 +231,7 @@ int main(int argc, char *argv[]) {
 
   struct sockaddr_in securityAgentServerAddr;
   int securityAgentPort = 13868;
-  MESSAGE_PROTO sendReqMsg;
+  SECURITY_AGENT_HEADER reqAuthHeader;
 
   SetTlsqDcuDebugLevel(TLSQ_DCU_DEBUG_DEBUG);
 
@@ -236,34 +244,59 @@ int main(int argc, char *argv[]) {
   serverPort = atoi(argv[1]);
   securityAgentPort = atoi(argv[2]);
 
-  createThreadRecv(&serverPort);
+  createThreadRecv(serverPort);
 
-  printf("\nselfUdpServerPort=%d, securityAgentUdpServerPort=%d\n", serverPort, securityAgentPort);
+  LOG_DEBUG("\nselfUdpServerPort=%d, securityAgentUdpServerPort=%d\n", serverPort, securityAgentPort);
 
   //int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsigned int aaaPort, char* pCallingStationId, unsigned char** ppOutMsg, int* outMsgLen) {
   char* pMsg = NULL;
   int msgLen = 0;
-  makeRequestMsgAuthentication("BMT3020000010", "0000000001", "127.0.0.1", 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen);
+  //makeRequestMsgAuthentication("BMT3020000010", "0000000001", "192.168.0.137", 13868, "00-00-b8-27-eb-f0-09-48", &pMsg, &msgLen); // eth0
+  //makeRequestMsgAuthentication("BMT3020000010", "0000000001", "192.168.0.11", 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
+                                                
+  makeRequestMsgAuthentication("BMT3020000010", "BMT3020020", "192.168.0.11", 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
+  if(pMsg == NULL) {
+    LOG_ERROR("pMsg is null.");
+  }
+  LOG_DEBUG("sizeof(SECURITY_AGENT_HEADER)=%d, sizeof(REQ_MSG_AUTHENTICATION)=%d, msgLen=%d", sizeof(SECURITY_AGENT_HEADER), sizeof(REQ_MSG_AUTHENTICATION),  msgLen);
+
   //return 0;
   //서버 주소 구조
   memset(&securityAgentServerAddr, 0, addrlen); //bzero((char *)&servaddr, sizeof(servaddr));
   securityAgentServerAddr.sin_family = AF_INET; //인터넷 Addr Family
   securityAgentServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); //argv[1]에서 주소를 가져옴
-  securityAgentServerAddr.sin_port = htons(securityAgentPort); //argv[2]에서 port를 가져옴
 
-  sendReqMsg.header.commandCode;
-  sendReqMsg.header.transactionId;
-  sendReqMsg.header.verMsgLen.version = 0x01;
-  sendReqMsg.header.verMsgLen.messageLength = (sendReqMsg.header.verMsgLen.messageLength & 0xff000000);
+  //securityAgentPort = 10000;
+  LOG_DEBUG("securityAgentPort=%d", securityAgentPort);
+  securityAgentServerAddr.sin_port = htons(securityAgentPort); //argv[2]에서 port를 가져옴
+  unsigned int verAndMesLength =  0x01 << 24;
+  verAndMesLength = verAndMesLength | (sizeof(SECURITY_AGENT_HEADER) + sizeof(REQ_MSG_AUTHENTICATION));
+  reqAuthHeader.verMsgLen = (unsigned int)htonl(verAndMesLength);
+
+  reqAuthHeader.commandCode = (unsigned int)htonl((uint32_t)0x000000f0);
+  reqAuthHeader.transactionId = (unsigned int)htonl((uint32_t)0x00000001);
+
+  unsigned int transactionId = 1;
+
   while(1) {
         //메시지 전송
     sleep(5);
-    if((sendto(gServerSocket, buf, strlen(buf), 0, (struct sockaddr *)&securityAgentServerAddr, addrlen)) < 0) {
-      perror("sendto fail");
-      exit(0);
-    }
-    break;
+    if(transactionId == 1) {
+        char* sendBufer = (char*)malloc(sizeof( SECURITY_AGENT_HEADER) + sizeof(REQ_MSG_AUTHENTICATION));
+        reqAuthHeader.transactionId = (unsigned int)htonl((uint32_t)transactionId++);
+        memcpy(sendBufer, &reqAuthHeader, sizeof(SECURITY_AGENT_HEADER));
+        memcpy(sendBufer+sizeof(SECURITY_AGENT_HEADER), pMsg, sizeof(REQ_MSG_AUTHENTICATION));
+        LOG_DEBUG("sending...");
+        if((sendto(gServerSocket, sendBufer, sizeof(REQ_MSG_AUTHENTICATION) + sizeof(SECURITY_AGENT_HEADER), 0, (struct sockaddr *)&securityAgentServerAddr, addrlen)) < 0) {
+          LOG_ERROR("sendto fail, so exit...");
+        }
+
+        free(sendBufer);
+      }
+    //break;
   }
+
+
 
   close(gServerSocket);
   sleep(2);
