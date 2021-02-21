@@ -245,7 +245,7 @@ int main(int argc, char *argv[]) {
     
   serverPort = atoi(argv[1]);
   securityAgentPort = atoi(argv[2]);
-	strcpy(iaaaServerIPAddr, argv[3]);
+  strcpy(iaaaServerIPAddr, argv[3]);
 
   createThreadRecv(serverPort);
 
@@ -257,7 +257,7 @@ int main(int argc, char *argv[]) {
   //makeRequestMsgAuthentication("BMT3020000010", "0000000001", "192.168.0.137", 13868, "00-00-b8-27-eb-f0-09-48", &pMsg, &msgLen); // eth0
   //makeRequestMsgAuthentication("BMT3020000010", "0000000001", "192.168.0.11", 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
                                                 
-  makeRequestMsgAuthentication("BMT3020000010", "BMT3020020", securityAgentPort, 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
+  makeRequestMsgAuthentication("BMT3020000010", "BMT3020020", iaaaServerIPAddr, 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
   if(pMsg == NULL) {
     LOG_ERROR("pMsg is null.");
   }
