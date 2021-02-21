@@ -231,22 +231,25 @@ int main(int argc, char *argv[]) {
 
   struct sockaddr_in securityAgentServerAddr;
   int securityAgentPort = 13868;
+  char iaaaServerIPAddr[20] = {0,};
+
   SECURITY_AGENT_HEADER reqAuthHeader;
 
   SetTlsqDcuDebugLevel(TLSQ_DCU_DEBUG_DEBUG);
 
   //파일명 포트번호
-  if(argc != 3) { 
-      LOG_DEBUG("usage: %s udpServerPort securityAgentUdpPort", argv[0]);
+  if(argc != 4) { 
+      LOG_DEBUG("usage: %s udpServerPort securityAgentUdpPort iaaaServerIPAddress", argv[0]);
       exit(0);
   }
     
   serverPort = atoi(argv[1]);
   securityAgentPort = atoi(argv[2]);
+	strcpy(iaaaServerIPAddr, argv[3]);
 
   createThreadRecv(serverPort);
 
-  LOG_DEBUG("\nselfUdpServerPort=%d, securityAgentUdpServerPort=%d\n", serverPort, securityAgentPort);
+  LOG_DEBUG("\nselfUdpServerPort=%d, securityAgentUdpServerPort=%d, iaaaServerIPAddr=%s\n", serverPort, securityAgentPort, iaaaServerIPAddr);
 
   //int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsigned int aaaPort, char* pCallingStationId, unsigned char** ppOutMsg, int* outMsgLen) {
   char* pMsg = NULL;
@@ -254,7 +257,7 @@ int main(int argc, char *argv[]) {
   //makeRequestMsgAuthentication("BMT3020000010", "0000000001", "192.168.0.137", 13868, "00-00-b8-27-eb-f0-09-48", &pMsg, &msgLen); // eth0
   //makeRequestMsgAuthentication("BMT3020000010", "0000000001", "192.168.0.11", 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
                                                 
-  makeRequestMsgAuthentication("BMT3020000010", "BMT3020020", "192.168.0.11", 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
+  makeRequestMsgAuthentication("BMT3020000010", "BMT3020020", securityAgentPort, 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
   if(pMsg == NULL) {
     LOG_ERROR("pMsg is null.");
   }
