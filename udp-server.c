@@ -58,6 +58,29 @@ typedef struct ResponseMsgAthentication {
     unsigned int resultCode;  // 4bytes
 } RESP_MSG_AUTHENTICATION;
 
+typedef struct config_info {
+  char *key;
+  char value[50];
+} CONFIG_INFO;
+
+enum CONFIG_INFO_KEY {
+  SYSTEM_TITLE,
+  DCU_ID,
+  IAAA_SERVER_IPADDR,
+  DCU_MAC_ADDR
+};
+
+CONFIG_INFO gConfigInfo[] = {
+  {"system-title", ""},
+  {"dcu-id", ""},
+  {"iaaa-server-ip", ""},
+  {"dcu-mac-addr", ""},
+  {NULL, ""}
+}; 
+
+#define SECURITY_AGENT_UDP_PORT   13868
+#define SERVER_UDP_PORT_FOR_TRAP  10000
+#define CONFDIG_INFO_KEY_COUNT    4
 #define SYSTEM_TITLE_LEN          13
 #define DCU_ID_LEN                10
 #define CALLING_STATTION_ID_LEN   23
@@ -69,12 +92,13 @@ int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsign
     LOG_ERROR("pSysT is null or the length of pSysT is wrong.");
     return -1;
   }
-  LOG_DEBUG("makeRequestMsgAuthentication is called.");
+
+  //LOG_DEBUG("makeRequestMsgAuthentication is called.");
   if(pAaaIp == NULL || strlen(pAaaIp) <= 0 ) {
     LOG_ERROR("pAaaIp is null or the length of pAaaIp is wrong.");
     return -1;
   }
-  LOG_DEBUG("makeRequestMsgAuthentication is called.");
+  //LOG_DEBUG("makeRequestMsgAuthentication is called.");
   unsigned char* pMessage = (unsigned char*)malloc(sizeof(REQ_MSG_AUTHENTICATION));
   if(pMessage == NULL) {
     LOG_ERROR("pMessage is null");
@@ -82,7 +106,7 @@ int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsign
   }
   *ppOutMsg = pMessage;
   *outMsgLen = sizeof(REQ_MSG_AUTHENTICATION);
-  LOG_DEBUG("makeRequestMsgAuthentication is called.");
+  //LOG_DEBUG("makeRequestMsgAuthentication is called.");
 
   // SysT
   memset(pMessage, 0, sizeof(REQ_MSG_AUTHENTICATION));
@@ -94,11 +118,11 @@ int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsign
   pMessage[5] = (asciiToHex((char)pSysT[7]) << 4) | asciiToHex((char)pSysT[8]);
   pMessage[6] = (asciiToHex((char)pSysT[9]) << 4) | asciiToHex((char)pSysT[10]);
   pMessage[7] = (asciiToHex((char)pSysT[11]) << 4) | asciiToHex((char)pSysT[12]);
-  LOG_DEBUG("makeRequestMsgAuthentication is called.");
+  //LOG_DEBUG("makeRequestMsgAuthentication is called.");
   
   // DCU ID
   memcpy(&pMessage[8], pDcuId, DCU_ID_LEN);
-  LOG_DEBUG("makeRequestMsgAuthentication is called.");
+  //LOG_DEBUG("makeRequestMsgAuthentication is called.");
 
   // AAA-IP
   struct in_addr addr;
@@ -110,12 +134,12 @@ int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsign
   // pMessage[20] = (unsigned char)((addr.s_addr >>  8) & 0x000000ff);
   // pMessage[21] = (unsigned char)((addr.s_addr) & 0x000000ff);
 
-  LOG_DEBUG("makeRequestMsgAuthentication is called.");
+  //LOG_DEBUG("makeRequestMsgAuthentication is called.");
 
   // AAA-Port
   unsigned int serverPort = (unsigned int)htonl((unsigned long)aaaPort);
   memcpy(&pMessage[34], &serverPort, sizeof(unsigned int));
-  LOG_DEBUG("makeRequestMsgAuthentication is called.");
+  //LOG_DEBUG("makeRequestMsgAuthentication is called.");
   // Auth-Request-Type
   pMessage[38] = 0x01;  // 인증 요청 (default)
 
@@ -227,37 +251,98 @@ int main(int argc, char *argv[]) {
   char buf[MAXLINE+1];
   struct sockaddr_in cliaddr;
   int nbyte, addrlen = sizeof(struct sockaddr);
-  int serverPort = 10000;
+  //int serverPort = 10000;
 
   struct sockaddr_in securityAgentServerAddr;
-  int securityAgentPort = 13868;
+  //int securityAgentPort = 13868;
   char iaaaServerIPAddr[20] = {0,};
-
+  int i = 0;
+  char keyTemp[50], keyValueTemp[50];
+  
   SECURITY_AGENT_HEADER reqAuthHeader;
-
+//printf("%s|%d, logging\n", __FILE__, __LINE__);
   SetTlsqDcuDebugLevel(TLSQ_DCU_DEBUG_DEBUG);
 
-  //파일명 포트번호
-  if(argc != 4) { 
-      LOG_DEBUG("usage: %s udpServerPort securityAgentUdpPort iaaaServerIPAddress", argv[0]);
-      exit(0);
+  //파일명 포트"번호
+  // if(argc != 4) { 
+  //     LOG_DEBUG("usage: %s udpServerPort securityAgentUdpPort iaaaServerIPAddress", argv[0]);
+  //     exit(0);
+  // }
+  
+//printf("%s|%d, logging\n", __FILE__, __LINE__);
+  FILE *fp = NULL;
+  fp = fopen("/tmp/tlsq-dcu.conf", "rt");
+  // if(fp == NULL) {
+  //   fp = fopen("./tldq-dcu.conf", "rt");
+  // }
+//printf("%s|%d, logging\n", __FILE__, __LINE__);
+  if(fp == NULL) {
+    LOG_DEBUG("Please create /tmp/tldq-dcu.conf like below.");
+    LOG_DEBUG("system-title	BMT3020000010");
+    LOG_DEBUG("dcu-id		BMT3020020");
+    LOG_DEBUG("iaaa-server-ip	211.170.81.205");
+    LOG_DEBUG("dcu-mac-addr	00-00-b8-27-eb-a5-5c-1d");
+    exit(-1);
   }
-    
-  serverPort = atoi(argv[1]);
-  securityAgentPort = atoi(argv[2]);
-  strcpy(iaaaServerIPAddr, argv[3]);
+//printf("%s|%d, logging\n", __FILE__, __LINE__);
 
-  createThreadRecv(serverPort);
+  while(1) {
+    if(fscanf(fp, "%s %s", keyTemp, keyValueTemp) == EOF) {
+      //printf("there is empty in tlsq-dcu.conf\n");
+      break;
+    }
+//printf("%s|%d, logging\n", __FILE__, __LINE__);
 
-  LOG_DEBUG("\nselfUdpServerPort=%d, securityAgentUdpServerPort=%d, iaaaServerIPAddr=%s\n", serverPort, securityAgentPort, iaaaServerIPAddr);
+    //printf("tlsq-dcu.conf : key=%s, value=%s\n", keyTemp, keyValueTemp);
+    i = 0;
+    while(1) {
+      if(gConfigInfo[i].key == NULL) {
+        break;
+      }
+      if(strcmp(keyTemp, gConfigInfo[i].key) == 0) {
+        //printf("found key=%s, value=%s\n\n", keyTemp, keyValueTemp);
+        strcpy(gConfigInfo[i].value, keyValueTemp);
+        break;
+      }
+      i++;
+    }
+  }
+
+//printf("%s|%d, logging\n", __FILE__, __LINE__);
+
+  i = 0;
+  while(gConfigInfo[i].key != NULL) {
+//printf("%s|%d, logging\n", __FILE__, __LINE__);
+
+    if(strlen(gConfigInfo[i].value) == 0) {
+      LOG_DEBUG("the value of key(%s) is empty. so this program has been terminated.");
+      exit(-1);
+    }
+
+    LOG_DEBUG("%s:%s", gConfigInfo[i].key, gConfigInfo[i].value);
+    i ++;
+  }
+
+  //serverPort = atoi(argv[1]);
+  //securityAgentPort = atoi(argv[2]);
+  //strcpy(iaaaServerIPAddr, argv[3]);
+
+  createThreadRecv(SERVER_UDP_PORT_FOR_TRAP);
+
+  LOG_DEBUG("\nselfUdpServerPort=%d, securityAgentUdpServerPort=%d, iaaaServerIPAddr=%s", \
+    SERVER_UDP_PORT_FOR_TRAP, SECURITY_AGENT_UDP_PORT, gConfigInfo[IAAA_SERVER_IPADDR].value);
 
   //int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsigned int aaaPort, char* pCallingStationId, unsigned char** ppOutMsg, int* outMsgLen) {
   char* pMsg = NULL;
   int msgLen = 0;
   //makeRequestMsgAuthentication("BMT3020000010", "0000000001", "192.168.0.137", 13868, "00-00-b8-27-eb-f0-09-48", &pMsg, &msgLen); // eth0
   //makeRequestMsgAuthentication("BMT3020000010", "0000000001", "192.168.0.11", 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
-                                                
-  makeRequestMsgAuthentication("BMT3020000010", "BMT3020020", iaaaServerIPAddr, 13868, "00-00-b8-27-eb-a5-5c-1d", &pMsg, &msgLen); // wlan0
+                                 
+  makeRequestMsgAuthentication( gConfigInfo[SYSTEM_TITLE].value, 
+                                gConfigInfo[DCU_ID].value, 
+                                gConfigInfo[IAAA_SERVER_IPADDR].value, 
+                                SECURITY_AGENT_UDP_PORT, 
+                                gConfigInfo[DCU_MAC_ADDR].value, &pMsg, &msgLen); // wlan0
   if(pMsg == NULL) {
     LOG_ERROR("pMsg is null.");
   }
@@ -270,8 +355,8 @@ int main(int argc, char *argv[]) {
   securityAgentServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); //argv[1]에서 주소를 가져옴
 
   //securityAgentPort = 10000;
-  LOG_DEBUG("securityAgentPort=%d", securityAgentPort);
-  securityAgentServerAddr.sin_port = htons(securityAgentPort); //argv[2]에서 port를 가져옴
+  LOG_DEBUG("securityAgentPort=%d", SECURITY_AGENT_UDP_PORT);
+  securityAgentServerAddr.sin_port = htons(SECURITY_AGENT_UDP_PORT); //argv[2]에서 port를 가져옴
   unsigned int verAndMesLength =  0x01 << 24;
   verAndMesLength = verAndMesLength | (sizeof(SECURITY_AGENT_HEADER) + sizeof(REQ_MSG_AUTHENTICATION));
   reqAuthHeader.verMsgLen = (unsigned int)htonl(verAndMesLength);
