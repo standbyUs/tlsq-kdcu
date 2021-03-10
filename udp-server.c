@@ -18,7 +18,7 @@
 
 
 
-#define MAXLINE    1024
+#define MAXLINE    1024*10
 #define BLOCK      255
 
 #define LOOGER_E()
@@ -208,7 +208,7 @@ void* threadRecv(void* obj) {
     //LOG_DEBUG("Server : waiting request [gServerSocket=%d].", gServerSocket);
     //전송 받은 메시지 nbyte 저장
     nbyte = recvfrom(gServerSocket, buf, MAXLINE , 0, (struct sockaddr *)&cliaddr, &addrlen);
-    //LOG_DEBUG("Server : waiting request [gServerSocket2=%d].", gServerSocket);
+    LOG_DEBUG("Server : recvfrom:nbyte=%d", nbyte);
     if(nbyte < 0) {
       LOG_ERROR("recvfrom fail");
       exit(1);
