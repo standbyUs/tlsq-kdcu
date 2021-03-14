@@ -1,0 +1,231 @@
+vtls/libcurl_la-schannel_verify.lo: vtls/schannel_verify.c \
+ ../lib/curl_setup.h ../lib/curl_config.h ../include/curl/curl.h \
+ ../include/curl/curlver.h ../include/curl/system.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/types.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./features.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/predefs.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/cdefs.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/wordsize.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/gnu/stubs.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/types.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/typesizes.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./time.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include/stddef.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./endian.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/endian.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/byteswap.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/select.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/select.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/sigset.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/time.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/sysmacros.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/pthreadtypes.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/socket.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/uio.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/uio.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/socket.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/sockaddr.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/asm/socket.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/asm/sockios.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./stdio.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./libio.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./_G_config.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./wchar.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include/stdarg.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/stdio_lim.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/sys_errlist.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/stdio.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include-fixed/limits.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include-fixed/syslimits.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./limits.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/posix1_lim.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/local_lim.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./linux/limits.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/posix2_lim.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./xlocale.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/time.h \
+ ../include/curl/easy.h ../include/curl/multi.h ../include/curl/curl.h \
+ ../include/curl/urlapi.h ../include/curl/typecheck-gcc.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./assert.h \
+ ../lib/curl_setup_once.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./stdlib.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/waitflags.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/waitstatus.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./alloca.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./string.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/string.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/string2.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./ctype.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./errno.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/errno.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./linux/errno.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/asm/errno.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./asm-generic/errno.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./asm-generic/errno-base.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/stat.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/stat.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include/stdbool.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./unistd.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/posix_opt.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/environments.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/confname.h \
+ /media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./getopt.h \
+ ../lib/curl_ctype.h ../lib/curl_setup.h
+
+../lib/curl_setup.h:
+
+../lib/curl_config.h:
+
+../include/curl/curl.h:
+
+../include/curl/curlver.h:
+
+../include/curl/system.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/types.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./features.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/predefs.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/cdefs.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/wordsize.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/gnu/stubs.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/types.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/typesizes.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./time.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include/stddef.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./endian.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/endian.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/byteswap.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/select.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/select.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/sigset.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/time.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/sysmacros.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/pthreadtypes.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/socket.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/uio.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/uio.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/socket.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/sockaddr.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/asm/socket.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/asm/sockios.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./stdio.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./libio.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./_G_config.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./wchar.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include/stdarg.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/stdio_lim.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/sys_errlist.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/stdio.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include-fixed/limits.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include-fixed/syslimits.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./limits.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/posix1_lim.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/local_lim.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./linux/limits.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/posix2_lim.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./xlocale.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/time.h:
+
+../include/curl/easy.h:
+
+../include/curl/multi.h:
+
+../include/curl/curl.h:
+
+../include/curl/urlapi.h:
+
+../include/curl/typecheck-gcc.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./assert.h:
+
+../lib/curl_setup_once.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./stdlib.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/waitflags.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/waitstatus.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./alloca.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./string.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/string.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/string2.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./ctype.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./errno.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/errno.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./linux/errno.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/asm/errno.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./asm-generic/errno.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./asm-generic/errno-base.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/sys/stat.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/stat.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/include/stdbool.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./unistd.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/posix_opt.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/environments.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/arm-linux-gnueabihf/bits/confname.h:
+
+/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/oct/gcc-linaro-arm-linux-gnueabihf-4.7-2013.03-20130313_linux/bin/../arm-linux-gnueabihf/libc/usr/include/./getopt.h:
+
+../lib/curl_ctype.h:
+
+../lib/curl_setup.h:

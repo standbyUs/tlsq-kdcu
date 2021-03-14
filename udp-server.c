@@ -86,8 +86,11 @@ CONFIG_INFO gConfigInfo[] = {
 #define CALLING_STATTION_ID_LEN   23
 #define REQ_AUTH_LEN              62
 
+
 int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsigned int aaaPort, char* pCallingStationId, unsigned char** ppOutMsg, int* outMsgLen) {
   LOG_DEBUG("makeRequestMsgAuthentication is called.");
+  int i = 0;
+
   if(pSysT == NULL || strlen(pSysT) != SYSTEM_TITLE_LEN) {
     LOG_ERROR("pSysT is null or the length of pSysT is wrong.");
     return -1;
@@ -148,7 +151,7 @@ int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsign
   memcpy(&pMessage[39], pCallingStationId, CALLING_STATTION_ID_LEN); 
 
   LOG_DEBUG("\nsending data >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-  for(int i=0; i < REQ_AUTH_LEN; i++) {
+  for(i=0; i < REQ_AUTH_LEN; i++) {
     printf("%02x ", pMessage[i]);
   }
   printf("\n");

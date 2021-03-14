@@ -1,0 +1,9 @@
+prefix=/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/tlsq/kdcu/tlsq-kdcu/src/common/openssl-1.1.1g/build-kdcu
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: OpenSSL
+Description: Secure Sockets Layer and cryptography libraries and tools
+Version: 1.1.1g
+Requires: libssl libcrypto
