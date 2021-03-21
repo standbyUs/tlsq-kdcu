@@ -1,7 +1,15 @@
+#!/bin/sh
+
+SHELL_PATH=`pwd -P`
+echo $SHELL_PATH
+
+rm -rf ./build-linux
+mkdir build-linux
+
 ./configure \
-	--prefix=/media/alex/ex-hard/oct/curl-7.72.0/build-linux \
-	CFLAGS=-I/media/alex/ex-hard/oct/openssl-1.1.1g/build-linux/include \
-	LDFLAGS=-L/media/alex/ex-hard/oct/openssl-1.1.1g/build-linux/lib \
+	--prefix=${SHELL_PATH}/build-linux \
+	CFLAGS=-I${SHELL_PATH}/../openssl-1.1.1g/build-linux/include \
+	LDFLAGS=-L${SHELL_PATH}/../openssl-1.1.1g/build-linux/lib \
 	LIBS="-lssl -lcrypto"
 
 make

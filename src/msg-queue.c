@@ -1,12 +1,25 @@
 #include "czmq.h"
 #include "json-c/json.h"
 #include "tlsq-dcu-logger.h"
-#include "msg-ququq.h"
+#include "msg-queue.h"
+#include "b64.h"
+
+#define	FREE_CHAR(x)	if(x != NULL) {free(x); x = NULL;}
 
 getCertAndKeys_callback gpGetCertAndKeysCallback = NULL;
+reAuth_callback gpReAuthCallback = NULL;
+getAuthState_callback gpGetAuthStateCallback = NULL;
 
-void regisger_getCertAndKeysCallback(getCertAndKeys_callback pCallback) {
+void register_getCertAndKeysCallback(getCertAndKeys_callback pCallback) {
 	gpGetCertAndKeysCallback = pCallback;
+}
+
+void resister_reAuthCallback(reAuth_callback pCallback) {
+	gpReAuthCallback = pCallback;
+}
+
+void register_getAuthStateCallback(getAuthState_callback pCallback) {
+	gpGetAuthStateCallback = pCallback;
 }
 
 zsock_t* gpZsockServer = NULL;
@@ -21,9 +34,193 @@ pthread_mutex_t gMutexServerSend = PTHREAD_MUTEX_INITIALIZER;
 int gIaaaClientMsgQueuePort = 9000;
 int gPullMsgQueuePort = 9001;
 
+typedef struct _CertKeyInfo {
+	bool state;
+	char* fepCert;
+	int fepCertLen;
+	char* emulatorCert;
+	int emulatorCertLen;
+	char* zKey1;
+	int zKey1Len;
+	char* zKey2;
+	int zKey2Len;
+} CertKeyInfo;
 
-void* msgQueueServerThread(void) 
-void* msgQueueClientThread(void) 
+CertKeyInfo gCertKeyInfo;
+
+void* msgQueueServerThread(void);
+void* msgQueueClientThread(void);
+
+void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len) {
+	if(authState == true) {
+		if(gCertKeyInfo.fepCert != NULL) {
+			free(gCertKeyInfo.fepCert);
+		}
+		gCertKeyInfo.fepCert = (char*)malloc(fepCertLen);
+		memcpy(gCertKeyInfo.fepCert, fepCert, fepCertLen);
+
+		if(gCertKeyInfo.emulatorCert != NULL) {
+			free(gCertKeyInfo.emulatorCert);
+		}
+		gCertKeyInfo.emulatorCert = (char*)malloc(emuCertLen);
+		memcpy(gCertKeyInfo.emulatorCert, emuCert, emuCertLen);
+
+		if(gCertKeyInfo.zKey1 != NULL) {
+			free(gCertKeyInfo.zKey1);
+		}
+		gCertKeyInfo.zKey1 = (char*)malloc(zKey1Len);	
+		memcpy(gCertKeyInfo.zKey1, zKey1, zKey1Len);
+
+		if(gCertKeyInfo.zKey2 != NULL) {
+			free(gCertKeyInfo.zKey2);
+		}
+		gCertKeyInfo.zKey2 = (char*)malloc(zKey2Len);	
+		memcpy(gCertKeyInfo.zKey2, zKey2, zKey2Len);
+	} else {
+		if(gCertKeyInfo.fepCert != NULL) {
+			free(gCertKeyInfo.fepCert);
+			gCertKeyInfo.fepCert = NULL;
+		}
+
+		if(gCertKeyInfo.emulatorCert != NULL) {
+			free(gCertKeyInfo.emulatorCert);
+			gCertKeyInfo.emulatorCert = NULL;
+		}
+
+		if(gCertKeyInfo.zKey1 != NULL) {
+			free(gCertKeyInfo.zKey1);
+			gCertKeyInfo.zKey1 = NULL;
+		}
+
+		if(gCertKeyInfo.zKey2 != NULL) {
+			free(gCertKeyInfo.zKey2);
+			gCertKeyInfo.zKey2 = NULL;
+		}
+
+		memset(&gCertKeyInfo, 0, sizeof(CertKeyInfo));
+	}
+
+	gCertKeyInfo.state = authState;
+
+	char* outStream = NULL;
+	
+	json_object *rootObj = json_object_new_object();
+	json_object_get(rootObj);	// sta2002
+
+	json_object *kdcuMessageObj = json_object_new_object();
+	json_object_object_add(rootObj, "kdcu-message", kdcuMessageObj);
+	json_object_get(kdcuMessageObj);
+
+	json_object *commandObj = json_object_new_string("getCert-Keys");
+	json_object_object_add(kdcuMessageObj, "command", commandObj);
+
+	json_object *pAuthState = json_object_new_boolean(gCertKeyInfo.state);
+	json_object_object_add(kdcuMessageObj, "authState", pAuthState);
+
+	char *encFepCert = NULL;
+	char *encEmulatorCert = NULL;
+	char *encZKey1 = NULL;
+	char *enczKey2 = NULL;
+
+	if(gCertKeyInfo.state) {
+		encFepCert = b64_encode(gCertKeyInfo.fepCert, gCertKeyInfo.fepCertLen);
+		encEmulatorCert = b64_encode(gCertKeyInfo.emulatorCert, gCertKeyInfo.emulatorCertLen);
+		encZKey1 = b64_encode(gCertKeyInfo.zKey1, gCertKeyInfo.zKey1Len);
+		enczKey2 = b64_encode(gCertKeyInfo.zKey2, gCertKeyInfo.zKey2Len);
+
+
+
+		json_object *fepCert = json_object_new_string(gCertKeyInfo.fepCert);
+		json_object_object_add(kdcuMessageObj, "fepCert", fepCert);
+		json_object *fepCertLen = json_object_new_int(gCertKeyInfo.fepCertLen);
+		json_object_object_add(kdcuMessageObj, "fepCertLen", fepCertLen);
+
+		json_object *emulatorCert = json_object_new_string(gCertKeyInfo.emulatorCert);
+		json_object_object_add(kdcuMessageObj, "emulatorCert", emulatorCert);
+		json_object *emulatorCertLen = json_object_new_int(gCertKeyInfo.emulatorCertLen);
+		json_object_object_add(kdcuMessageObj, "emulatorCertLen", emulatorCertLen);
+
+		json_object *zKey1 = json_object_new_string(gCertKeyInfo.zKey1);
+		json_object_object_add(kdcuMessageObj, "zKey1", zKey1);
+		json_object *zKey1Len = json_object_new_int(gCertKeyInfo.zKey1Len);
+		json_object_object_add(kdcuMessageObj, "zKey1Len", zKey1Len);
+
+		json_object *zKey2 = json_object_new_string(gCertKeyInfo.zKey2);
+		json_object_object_add(kdcuMessageObj, "zKey2", zKey2);
+		json_object *zKey2Len = json_object_new_int(gCertKeyInfo.zKey2Len);
+		json_object_object_add(kdcuMessageObj, "zKey2Len", zKey2Len);
+	}
+
+	outStream = (char*)json_object_to_json_string(rootObj);
+	LOG_DEBUG("setCertAndKeys:outStream = %s",  outStream);
+
+
+
+	if(encFepCert) free(encFepCert);
+	if(encEmulatorCert) free(encEmulatorCert);
+	if(encZKey1) free(encZKey1);
+	if(enczKey2) free(enczKey2);
+
+	json_object_put(rootObj);
+	return outStream;
+
+}
+
+void reAuth() {
+#if 0
+{
+   "kdcu-message":{
+      "command":"reAuth"
+   }
+}
+#endif
+	char* outStream = NULL;
+	
+	json_object *rootObj = json_object_new_object();
+	json_object_get(rootObj);	// sta2002
+
+	json_object *kdcuMessageObj = json_object_new_object();
+	json_object_object_add(rootObj, "kdcu-message", kdcuMessageObj);
+	json_object_get(kdcuMessageObj);
+
+	json_object *commandObj = json_object_new_string("reAuth");
+	json_object_object_add(kdcuMessageObj, "command", commandObj);
+
+	outStream = (char*)json_object_to_json_string(rootObj);
+	LOG_DEBUG("reAuth:outStream = %s",  outStream);
+
+	json_object_put(rootObj);
+	return outStream;
+}
+
+void getAuthState() {
+#if 0
+{
+   "kdcu-message":{
+      "command":"getAuthState"
+   }
+}
+#endif
+	char* outStream = NULL;
+	
+	json_object *rootObj = json_object_new_object();
+	json_object_get(rootObj);	// sta2002
+
+	json_object *kdcuMessageObj = json_object_new_object();
+	json_object_object_add(rootObj, "kdcu-message", kdcuMessageObj);
+	json_object_get(kdcuMessageObj);
+
+	json_object *commandObj = json_object_new_string("getAuthState");
+	json_object_object_add(kdcuMessageObj, "command", commandObj);
+
+	outStream = (char*)json_object_to_json_string(rootObj);
+	LOG_DEBUG("getAuthState:outStream = %s",  outStream);
+
+
+
+	json_object_put(rootObj);
+	return outStream;
+}
 
 char* msgQueueAliveEncoder() {
 	LOG_DEBUG("msgQueueAliveEncoder:called");
@@ -43,24 +240,28 @@ char* msgQueueAliveEncoder() {
 	outStream = (char*)json_object_to_json_string(rootObj);
 	LOG_DEBUG("msgQueueAliveEncoder:outStream = %s",  outStream);
 
+
+
 	json_object_put(rootObj);
 	return outStream;
 }
 
-void msgQueueParser(char* recvData) {
+int msgQueueParser(char* recvData) {
 	if(recvData == NULL) {
-		LOG_ERROR("msgQueueParser:recvData is null")
-		return;
+		LOG_ERROR("msgQueueParser:recvData is null");
+		return -1;
 	}
 
 	json_object *rootObj, *kdcuMessageObj;
-	json_object *commandVal, *commandType;
+	json_object *commandVal;
+	json_object *fepCert, *emulatorCert, *zKey1, *zKey2;
+	char* pStrValue = NULL;
 			
 	/* JSON type의 데이터를 읽는다. */
 	rootObj = json_tokener_parse(recvData);
 	if(rootObj == NULL) {
-		LOG_DEBUG("msgQueueParser:rootObj is null")
-		return;
+		LOG_DEBUG("msgQueueParser:rootObj is null");
+		return -1;
 	}
 
   	kdcuMessageObj = json_object_object_get(rootObj, "kdcu-message");
@@ -76,34 +277,39 @@ void msgQueueParser(char* recvData) {
 	// to do : check if the dateTiem is valid or not.
 
 	if(strcmp(strCommand, "getCert-Keys") == 0) {
-		commandType = json_object_object_get(kdcuMessageObj, "commandType");
-		char* pCommandType = (char*)json_object_get_string(commandType);
-		LOG_DEBUG("msgQueueParser:pCommandType = %s",  pCommandType==NULL?"NULL":pCommandType);
-		// to do : to handle 
-		if(strcmp(pCommandType, "request") == 0) {
-			char* sendBuffer = kdcuMessageEncoder("resp-off");
-			if(gpZsockServer != NULL) {
-				pthread_mutex_lock(&gMutexServerSend);
-				zstr_send (gpZsockServer, sendBuffer);
-				pthread_mutex_unlock(&gMutexServerSend);
-			}
-		} else if(strcmp(pCommandType, "response") == 0) {
-			char* sendBuffer = kdcuMessageEncoder("resp-on");
-			if(gpZsockServer != NULL) {
-				pthread_mutex_lock(&gMutexServerSend);
-				zstr_send (gpZsockServer, sendBuffer);
-				pthread_mutex_unlock(&gMutexServerSend);
-			}
-			pthread_mutex_unlock(&gMutexServerSend);
-		}
+		fepCert = json_object_object_get(kdcuMessageObj, "fepCert");
+		char* pFepCert = (char*)json_object_get_string(fepCert);
+		LOG_DEBUG("msgQueueParser:fepCert = %s",  pFepCert==NULL?"NULL":pFepCert);
+
+		emulatorCert = json_object_object_get(kdcuMessageObj, "emulatorCert");
+		char* pEmulatorCert = (char*)json_object_get_string(emulatorCert);
+		LOG_DEBUG("msgQueueParser:emulatorCert = %s",  pEmulatorCert==NULL?"NULL":pEmulatorCert);
+
+		zKey1 = json_object_object_get(kdcuMessageObj, "zKey1");
+		char* pZKey1 = (char*)json_object_get_string(zKey1);
+		LOG_DEBUG("msgQueueParser:zKey1 = %s",  pZKey1==NULL?"NULL":pZKey1);
+
+
+		zKey2 = json_object_object_get(kdcuMessageObj, "zKey2");
+		char* pZKey2 = (char*)json_object_get_string(zKey2);
+		LOG_DEBUG("msgQueueParser:zKey2 = %s",  pZKey2==NULL?"NULL":pZKey2);
+
+	} else if(strcmp(strCommand, "reAuth") == 0) {		
+
+		
+	} else if(strcmp(strCommand, "getAuthState") == 0) {	
+
+
 	} else if(strcmp(strCommand, "alive") == 0) {		
-		//oppositeAlive();
+
+
 	} else {
 		LOG_DEBUG("- msgQueueParser:this command(%s) is not supported",  strCommand);
-		return;
+		return -1;
 	}
 
 	json_object_put(rootObj);
+	return 0;
 }
 
 
@@ -119,6 +325,8 @@ void zmqCommonInit(bool isIaaaClient, int iaaaClientPort, int pullPort) {
 			return NULL;
 		}
 	}
+	memset(&gCertKeyInfo, 0, sizeof(CertKeyInfo));
+
 	gIsIaaaClient = isIaaaClient;
 	gIaaaClientMsgQueuePort = iaaaClientPort;
 	gPullMsgQueuePort = pullPort;
@@ -179,6 +387,8 @@ void createThreadMsgQueueClinet() {
 void* msgQueueServerThread(void) 
 {
 	LOG_DEBUG("[Server] - msgQueueServerThread:called");
+	char bindUrl[100] = {0,};
+
 	pthread_detach(pthread_self());
 
 	//  Prepare the server certificate as we did in Stonehouse
@@ -193,12 +403,22 @@ void* msgQueueServerThread(void)
 		LOG_ERROR("[Server] - msgQueueServerThread:server_key1 is NULL");
 		return NULL;
 	}
-
+	LOG_DEBUG("[Server] - msgQueueServerThread:server_key1=%s", server_key1);
 	//  Create and bind server socket
 	gpZsockServer = zsock_new (ZMQ_PUSH);
 	zcert_apply (server_cert, gpZsockServer);
 	zsock_set_curve_server (gpZsockServer, 1);
-	zsock_bind (gpZsockServer, "tcp://*:9000");
+	
+	if(gIsIaaaClient == true) {
+		sprintf(bindUrl, "tcp://*:%d", gIaaaClientMsgQueuePort);
+	} else {
+		sprintf(bindUrl, "tcp://*:%d", gPullMsgQueuePort);
+	}
+	LOG_DEBUG("[Server] - msgQueueServerThread:bindUrl=%s", bindUrl);
+
+
+	int ret = zsock_bind (gpZsockServer, bindUrl);
+	LOG_DEBUG("[Server] - msgQueueServerThread:zsock_bind() return value=%d", ret);
 
 	LOG_DEBUG("[Server] - msgQueueServerThread:Ironhouse test starts");
 
@@ -206,6 +426,7 @@ void* msgQueueServerThread(void)
 	char* pSendBuffer = NULL;
 	unsigned int count = 0;
 	unsigned int keepTime = 0;
+	return NULL;
 
 	while(1) {
 		if(gProcessClose == true) {
@@ -213,6 +434,7 @@ void* msgQueueServerThread(void)
 			break; 
 		}
 
+#if 0
 		if(((count++) % 5) == 0) {	// 2 seconds
 			pSendBuffer = msgQueueAliveEncoder();
 			if(pSendBuffer != NULL) {
@@ -224,6 +446,8 @@ void* msgQueueServerThread(void)
 				LOG_DEBUG("[Server] - msgQueueServerThread:pSendBuffer is null.");
 			}
 		}
+#endif
+
 		usleep(500000);
 	}
 
@@ -248,7 +472,10 @@ void* msgQueueClientThread(void)
 	}
 
 	zcert_t *client_cert = zcert_load (".curve/cert.txt_secret");
-
+	if(client_cert == NULL) {
+		LOG_ERROR("[Client] - msgQueueClientThread:client_cert is NULL");
+		return NULL;
+	}
 	//  Create and connect client socket
 	zsock_t *client = zsock_new (ZMQ_PULL);
 	zcert_apply (client_cert, client);
@@ -257,12 +484,15 @@ void* msgQueueClientThread(void)
 	if(server_key == NULL) {
 		LOG_ERROR("[Client] - msgQueueClientThread:server_key is NULL");
 	}
+
+	LOG_DEBUG("[Client] - msgQueueClientThread:server_key=%s", server_key);
+
 	zsock_set_curve_serverkey (client, server_key);
 	char oppositServerURL[100] = {0,};
-	if(gIsIaaaClient == false) {
-		sprintf(oppositServerURL, "tcp://127.0.0.1:%d", gIaaaClientMsgQueuePort);
-	} else {
+	if(gIsIaaaClient == true) {
 		sprintf(oppositServerURL, "tcp://127.0.0.1:%d", gPullMsgQueuePort);
+	} else {
+		sprintf(oppositServerURL, "tcp://127.0.0.1:%d", gIaaaClientMsgQueuePort);
 	}
 
 	zsock_connect (client, oppositServerURL);

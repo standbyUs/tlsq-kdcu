@@ -21,7 +21,7 @@
 #
 ###########################################################################
 
-prefix=/media/alex/ex-hard/oct/curl-7.72.0/build-linux
+prefix=/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/tlsq/kdcu/tlsq-kdcu/src/common/curl-7.72.0/build-linux
 exec_prefix=${prefix}
 includedir=${prefix}/include
 cppflag_curl_staticlib=
@@ -172,7 +172,7 @@ while test $# -gt 0; do
 
     --static-libs)
         if test "Xyes" != "Xno" ; then
-          echo ${exec_prefix}/lib/libcurl.a -L/media/alex/ex-hard/oct/openssl-1.1.1g/build-linux/lib -lrtmp -lssl -lcrypto -lssl -lcrypto -lldap -llber -lz -lssl -lcrypto
+          echo ${exec_prefix}/lib/libcurl.a -L/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/tlsq/kdcu/tlsq-kdcu/src/common/curl-7.72.0/../openssl-1.1.1g/build-linux/lib -lrtmp -lssl -lcrypto -lssl -lcrypto -lldap -llber -lz -lssl -lcrypto
         else
           echo "curl was built with static libraries disabled" >&2
           exit 1
@@ -180,7 +180,7 @@ while test $# -gt 0; do
         ;;
 
     --configure)
-        echo " '--prefix=/media/alex/ex-hard/oct/curl-7.72.0/build-linux' 'CFLAGS=-I/media/alex/ex-hard/oct/openssl-1.1.1g/build-linux/include' 'LDFLAGS=-L/media/alex/ex-hard/oct/openssl-1.1.1g/build-linux/lib' 'LIBS=-lssl -lcrypto'"
+        echo " '--prefix=/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/tlsq/kdcu/tlsq-kdcu/src/common/curl-7.72.0/build-linux' 'CFLAGS=-I/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/tlsq/kdcu/tlsq-kdcu/src/common/curl-7.72.0/../openssl-1.1.1g/build-linux/include' 'LDFLAGS=-L/media/alex/abd36268-599a-4aa3-8170-01f346fdf216/tlsq/kdcu/tlsq-kdcu/src/common/curl-7.72.0/../openssl-1.1.1g/build-linux/lib' 'LIBS=-lssl -lcrypto'"
         ;;
 
     *)

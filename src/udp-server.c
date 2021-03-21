@@ -12,6 +12,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <stdbool.h>  // error: unknown type name ‘bool’
+
 
 #include "tlsq-dcu-logger.h"
 #include "tlsq-dcu-utils.h"
@@ -251,11 +253,20 @@ void createThreadRecv(int port) {
 }
 
 
-int getCertAndKeys_callback(OUT char* fepCert, OUT int fepCertLen, OUT char* emuCert, OUT int emuCertLen, OUT char* zKey1, OUT int zKey1Len, OUT char* zKey2, OUT int zKey2Len) {
-  LOG_DEBUG("getCertAndKeys_callback(...) is called.");
-
+int getCertAndKeysCallback(IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len) {
+  LOG_DEBUG("getCertAndKeysCallback(...) is called, but not supported.");
 
   return 0;
+}
+
+void reAuthCallback() {
+  LOG_DEBUG("reAuthCallback() is called.");
+
+}
+
+void getAuthStateCallback() {
+  LOG_DEBUG("getAuthStateCallback() is called.");
+
 }
 
 int main(int argc, char *argv[]) {
@@ -275,8 +286,11 @@ int main(int argc, char *argv[]) {
 
   //void zmqCommonInit(bool isIaaaClient, int iaaaClientPort, int pullPort);
   //typedef int (*getCertAndKeys_callback)(IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len);
-  zmqCommonInit(true, 9000, 9001);
-  regisger_getCertAndKeysCallback(getCertAndKeys_callback);
+  zmqCommonInit(true, 8800, 8801);
+  register_getCertAndKeysCallback(getCertAndKeysCallback);
+  resister_reAuthCallback(reAuthCallback);
+  register_getAuthStateCallback(getAuthStateCallback);
+
 
   FILE *fp = NULL;
   fp = fopen("/tmp/tlsq-dcu.conf", "rt");
