@@ -14,7 +14,7 @@ void register_getCertAndKeysCallback(getCertAndKeys_callback pCallback) {
 	gpGetCertAndKeysCallback = pCallback;
 }
 
-void resister_reAuthCallback(reAuth_callback pCallback) {
+void register_reAuthCallback(reAuth_callback pCallback) {
 	gpReAuthCallback = pCallback;
 }
 
@@ -189,6 +189,8 @@ void reAuth() {
 	outStream = (char*)json_object_to_json_string(rootObj);
 	LOG_DEBUG("reAuth:outStream = %s",  outStream);
 
+	zstr_send (gpZsockServer, outStream);
+
 	json_object_put(rootObj);
 	return outStream;
 }
@@ -216,7 +218,7 @@ void getAuthState() {
 	outStream = (char*)json_object_to_json_string(rootObj);
 	LOG_DEBUG("getAuthState:outStream = %s",  outStream);
 
-
+	zstr_send (gpZsockServer, outStream);
 
 	json_object_put(rootObj);
 	return outStream;
@@ -239,7 +241,6 @@ char* msgQueueAliveEncoder() {
 
 	outStream = (char*)json_object_to_json_string(rootObj);
 	LOG_DEBUG("msgQueueAliveEncoder:outStream = %s",  outStream);
-
 
 
 	json_object_put(rootObj);
@@ -295,11 +296,17 @@ int msgQueueParser(char* recvData) {
 		LOG_DEBUG("msgQueueParser:zKey2 = %s",  pZKey2==NULL?"NULL":pZKey2);
 
 	} else if(strcmp(strCommand, "reAuth") == 0) {		
-
-		
+		if(gpReAuthCallback != NULL) {
+			gpReAuthCallback();
+		} else {
+			LOG_ERROR("gpReAuthCallback is null, please check if calling register_reAuthCallback()");
+		}
 	} else if(strcmp(strCommand, "getAuthState") == 0) {	
-
-
+		if(gpGetAuthStateCallback != NULL) {
+			gpGetAuthStateCallback();
+		} else {
+			LOG_ERROR("gpReAuthCallback is null, please check if calling register_getAuthStateCallback()");
+		}
 	} else if(strcmp(strCommand, "alive") == 0) {		
 
 

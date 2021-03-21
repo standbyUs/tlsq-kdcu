@@ -58,6 +58,8 @@ int main(void) {
             reAuth();
         } else if(nSelectNum == 0) {
             break;
+        } else {
+            
         }
 
         usleep(SLEEP_TIME);

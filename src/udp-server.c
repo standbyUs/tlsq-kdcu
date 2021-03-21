@@ -288,7 +288,7 @@ int main(int argc, char *argv[]) {
   //typedef int (*getCertAndKeys_callback)(IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len);
   zmqCommonInit(true, 8800, 8801);
   register_getCertAndKeysCallback(getCertAndKeysCallback);
-  resister_reAuthCallback(reAuthCallback);
+  register_reAuthCallback(reAuthCallback);
   register_getAuthStateCallback(getAuthStateCallback);
 
 

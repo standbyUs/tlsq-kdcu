@@ -9,7 +9,7 @@ typedef void (*reAuth_callback)();
 typedef void(*getAuthState_callback)();
 
 void register_getCertAndKeysCallback(getCertAndKeys_callback pCallback);
-void resister_reAuthCallback(reAuth_callback pCallback);
+void register_reAuthCallback(reAuth_callback pCallback);
 void register_getAuthStateCallback(getAuthState_callback pCallback);
 
 void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len);
