@@ -460,7 +460,7 @@ void getAuthStateCallback() {
                     recvMsgAuthResultTrap.zKey1, sizeof(recvMsgAuthResultTrap.zKey1),
                     recvMsgAuthResultTrap.zKey2, sizeof(recvMsgAuthResultTrap.zKey2));
   } else{
-#if 0    
+#if 1    
       setCertAndKeys( gIsSucessAuthResultTrap, 
                       NULL, 0,
                       NULL, 0,
