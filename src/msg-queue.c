@@ -52,50 +52,59 @@ void* msgQueueServerThread(void);
 void* msgQueueClientThread(void);
 
 void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len) {
+	LOG_DEBUG("setCertAndKeys:fepCertLen=%d, emulCertLen=%d, zKey1Len=%d, zKey2Len=%d", fepCertLen, emuCertLen, zKey1Len, zKey2Len);
 	if(authState == true) {
 		if(gCertKeyInfo.fepCert != NULL) {
 			free(gCertKeyInfo.fepCert);
 		}
 		gCertKeyInfo.fepCert = (char*)malloc(fepCertLen);
 		memcpy(gCertKeyInfo.fepCert, fepCert, fepCertLen);
+		gCertKeyInfo.fepCertLen = fepCertLen;
 
 		if(gCertKeyInfo.emulatorCert != NULL) {
 			free(gCertKeyInfo.emulatorCert);
 		}
 		gCertKeyInfo.emulatorCert = (char*)malloc(emuCertLen);
 		memcpy(gCertKeyInfo.emulatorCert, emuCert, emuCertLen);
+		gCertKeyInfo.emulatorCertLen = emuCertLen;
 
 		if(gCertKeyInfo.zKey1 != NULL) {
 			free(gCertKeyInfo.zKey1);
 		}
 		gCertKeyInfo.zKey1 = (char*)malloc(zKey1Len);	
 		memcpy(gCertKeyInfo.zKey1, zKey1, zKey1Len);
-
+		gCertKeyInfo.zKey1Len = zKey1Len;
+		
 		if(gCertKeyInfo.zKey2 != NULL) {
 			free(gCertKeyInfo.zKey2);
 		}
 		gCertKeyInfo.zKey2 = (char*)malloc(zKey2Len);	
 		memcpy(gCertKeyInfo.zKey2, zKey2, zKey2Len);
+		gCertKeyInfo.zKey2Len = zKey2Len;
 	} else {
 		if(gCertKeyInfo.fepCert != NULL) {
 			free(gCertKeyInfo.fepCert);
 			gCertKeyInfo.fepCert = NULL;
 		}
+		gCertKeyInfo.fepCertLen = 0;
 
 		if(gCertKeyInfo.emulatorCert != NULL) {
 			free(gCertKeyInfo.emulatorCert);
 			gCertKeyInfo.emulatorCert = NULL;
 		}
+		gCertKeyInfo.emulatorCertLen = 0;
 
 		if(gCertKeyInfo.zKey1 != NULL) {
 			free(gCertKeyInfo.zKey1);
 			gCertKeyInfo.zKey1 = NULL;
 		}
+		gCertKeyInfo.zKey1Len = 0;
 
 		if(gCertKeyInfo.zKey2 != NULL) {
 			free(gCertKeyInfo.zKey2);
 			gCertKeyInfo.zKey2 = NULL;
 		}
+		gCertKeyInfo.zKey2Len = 0;
 
 		memset(&gCertKeyInfo, 0, sizeof(CertKeyInfo));
 	}
@@ -128,24 +137,22 @@ void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN c
 		encZKey1 = b64_encode(gCertKeyInfo.zKey1, gCertKeyInfo.zKey1Len);
 		enczKey2 = b64_encode(gCertKeyInfo.zKey2, gCertKeyInfo.zKey2Len);
 
-
-
-		json_object *fepCert = json_object_new_string(gCertKeyInfo.fepCert);
+		json_object *fepCert = json_object_new_string(encFepCert);
 		json_object_object_add(kdcuMessageObj, "fepCert", fepCert);
 		json_object *fepCertLen = json_object_new_int(gCertKeyInfo.fepCertLen);
 		json_object_object_add(kdcuMessageObj, "fepCertLen", fepCertLen);
 
-		json_object *emulatorCert = json_object_new_string(gCertKeyInfo.emulatorCert);
+		json_object *emulatorCert = json_object_new_string(encEmulatorCert);
 		json_object_object_add(kdcuMessageObj, "emulatorCert", emulatorCert);
 		json_object *emulatorCertLen = json_object_new_int(gCertKeyInfo.emulatorCertLen);
 		json_object_object_add(kdcuMessageObj, "emulatorCertLen", emulatorCertLen);
 
-		json_object *zKey1 = json_object_new_string(gCertKeyInfo.zKey1);
+		json_object *zKey1 = json_object_new_string(encZKey1);
 		json_object_object_add(kdcuMessageObj, "zKey1", zKey1);
 		json_object *zKey1Len = json_object_new_int(gCertKeyInfo.zKey1Len);
 		json_object_object_add(kdcuMessageObj, "zKey1Len", zKey1Len);
 
-		json_object *zKey2 = json_object_new_string(gCertKeyInfo.zKey2);
+		json_object *zKey2 = json_object_new_string(enczKey2);
 		json_object_object_add(kdcuMessageObj, "zKey2", zKey2);
 		json_object *zKey2Len = json_object_new_int(gCertKeyInfo.zKey2Len);
 		json_object_object_add(kdcuMessageObj, "zKey2Len", zKey2Len);
@@ -154,7 +161,7 @@ void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN c
 	outStream = (char*)json_object_to_json_string(rootObj);
 	LOG_DEBUG("setCertAndKeys:outStream = %s",  outStream);
 
-
+	zstr_send (gpZsockServer, outStream);
 
 	if(encFepCert) free(encFepCert);
 	if(encEmulatorCert) free(encEmulatorCert);
@@ -162,8 +169,6 @@ void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN c
 	if(enczKey2) free(enczKey2);
 
 	json_object_put(rootObj);
-	return outStream;
-
 }
 
 void reAuth() {
@@ -192,7 +197,6 @@ void reAuth() {
 	zstr_send (gpZsockServer, outStream);
 
 	json_object_put(rootObj);
-	return outStream;
 }
 
 void getAuthState() {
@@ -255,7 +259,7 @@ int msgQueueParser(char* recvData) {
 
 	json_object *rootObj, *kdcuMessageObj;
 	json_object *commandVal;
-	json_object *fepCert, *emulatorCert, *zKey1, *zKey2;
+	json_object *authState, *strVal, *intVal;
 	char* pStrValue = NULL;
 			
 	/* JSON type의 데이터를 읽는다. */
@@ -278,23 +282,59 @@ int msgQueueParser(char* recvData) {
 	// to do : check if the dateTiem is valid or not.
 
 	if(strcmp(strCommand, "getCert-Keys") == 0) {
-		fepCert = json_object_object_get(kdcuMessageObj, "fepCert");
-		char* pFepCert = (char*)json_object_get_string(fepCert);
-		LOG_DEBUG("msgQueueParser:fepCert = %s",  pFepCert==NULL?"NULL":pFepCert);
+		authState = json_object_object_get(kdcuMessageObj, "authState");
+		bool bAuthState = json_object_get_boolean(authState);
+		LOG_DEBUG("msgQueueParser:authState = %s",  bAuthState==true?"true":"false");
+		if(bAuthState == true) {
+			strVal = json_object_object_get(kdcuMessageObj, "fepCert");
+			char* pFepCert = (char*)json_object_get_string(strVal);
+			LOG_DEBUG("msgQueueParser:fepCert = %s",  pFepCert==NULL?"NULL":pFepCert);
+			intVal = json_object_object_get(kdcuMessageObj, "fepCertLen");
+			int fepCertLen = json_object_get_int(intVal);
+			LOG_DEBUG("msgQueueParser:fepCertLen = %d",  fepCertLen);
 
-		emulatorCert = json_object_object_get(kdcuMessageObj, "emulatorCert");
-		char* pEmulatorCert = (char*)json_object_get_string(emulatorCert);
-		LOG_DEBUG("msgQueueParser:emulatorCert = %s",  pEmulatorCert==NULL?"NULL":pEmulatorCert);
+			strVal = json_object_object_get(kdcuMessageObj, "emulatorCert");
+			char* pEmulatorCert = (char*)json_object_get_string(strVal);
+			LOG_DEBUG("msgQueueParser:emulatorCert = %s",  pEmulatorCert==NULL?"NULL":pEmulatorCert);
+			intVal = json_object_object_get(kdcuMessageObj, "emulatorCertLen");
+			int emulCertLen = json_object_get_int(intVal);
+			LOG_DEBUG("msgQueueParser:emulCertLen = %d",  emulCertLen);
 
-		zKey1 = json_object_object_get(kdcuMessageObj, "zKey1");
-		char* pZKey1 = (char*)json_object_get_string(zKey1);
-		LOG_DEBUG("msgQueueParser:zKey1 = %s",  pZKey1==NULL?"NULL":pZKey1);
+			strVal = json_object_object_get(kdcuMessageObj, "zKey1");
+			char* pZKey1 = (char*)json_object_get_string(strVal);
+			LOG_DEBUG("msgQueueParser:zKey1 = %s",  pZKey1==NULL?"NULL":pZKey1);
+			intVal = json_object_object_get(kdcuMessageObj, "zKey1Len");
+			int zKey1Len = json_object_get_int(intVal);
+			LOG_DEBUG("msgQueueParser:zKey1Len = %d",  zKey1Len);
 
+			strVal = json_object_object_get(kdcuMessageObj, "zKey2");
+			char* pZKey2 = (char*)json_object_get_string(strVal);
+			LOG_DEBUG("msgQueueParser:zKey2 = %s",  pZKey2==NULL?"NULL":pZKey2);
+			intVal = json_object_object_get(kdcuMessageObj, "zKey1Len");
+			int zKey2Len = json_object_get_int(intVal);
+			LOG_DEBUG("msgQueueParser:zKey2Len = %d",  zKey2Len);
 
-		zKey2 = json_object_object_get(kdcuMessageObj, "zKey2");
-		char* pZKey2 = (char*)json_object_get_string(zKey2);
-		LOG_DEBUG("msgQueueParser:zKey2 = %s",  pZKey2==NULL?"NULL":pZKey2);
+			char *decFepCert = b64_decode(pFepCert, strlen(pFepCert));
+			char *decEmulCert = b64_decode(pEmulatorCert, strlen(pEmulatorCert));
+			char *decZKey1 = b64_decode(pZKey1, strlen(pZKey1));
+			char *decZKey2 = b64_decode(pZKey2, strlen(pZKey2));
 
+			if(gpGetCertAndKeysCallback) {
+				gpGetCertAndKeysCallback(bAuthState, decFepCert, fepCertLen, decEmulCert, emulCertLen, decZKey1, zKey1Len, decZKey2, zKey2Len);
+			} else {
+				LOG_ERROR("gpGetCertAndKeysCallback is null, please check if calling register_getCertAndKeysCallback(...)");
+			}
+			if(decFepCert) free(decFepCert);
+			if(decEmulCert) free(decEmulCert);
+			if(decZKey1) free(decZKey1);
+			if(decZKey2) free(decZKey2);
+		} else {
+			if(gpGetCertAndKeysCallback) {
+				gpGetCertAndKeysCallback(bAuthState, NULL, 0, NULL, 0, NULL, 0, NULL, 0);
+			} else {
+				LOG_ERROR("gpGetCertAndKeysCallback is null, please check if calling register_getCertAndKeysCallback(...)");
+			}
+		}
 	} else if(strcmp(strCommand, "reAuth") == 0) {		
 		if(gpReAuthCallback != NULL) {
 			gpReAuthCallback();
