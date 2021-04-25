@@ -53,6 +53,9 @@ void* msgQueueClientThread(void);
 
 void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len) {
 	LOG_DEBUG("setCertAndKeys:fepCertLen=%d, emulCertLen=%d, zKey1Len=%d, zKey2Len=%d", fepCertLen, emuCertLen, zKey1Len, zKey2Len);
+	LOG_DEBUG("setCertAndKeys:message queue is not used. so it is not working!!! --> msgQ has been used. instead it.");
+	return;
+
 	if(authState == true) {
 		if(gCertKeyInfo.fepCert != NULL) {
 			free(gCertKeyInfo.fepCert);
@@ -172,6 +175,8 @@ void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN c
 }
 
 void reAuth() {
+	LOG_DEBUG("reAuth:message queue is not used. so it is not working!!! --> msgQ has been used. instead it.");
+	return;
 #if 0
 {
    "kdcu-message":{
@@ -200,6 +205,8 @@ void reAuth() {
 }
 
 void getAuthState() {
+	LOG_DEBUG("getAuthState:message queue is not used. so it is not working!!! --> msgQ has been used. instead it.");
+	return;
 #if 0
 {
    "kdcu-message":{

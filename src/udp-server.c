@@ -19,6 +19,12 @@
 #include "tlsq-dcu-utils.h"
 #include "msg-queue.h"
 
+// 2021.04.26 - steve requests : start
+#include "msgQ/msgQ.h"        
+#include "msgQ/msgQService.h"
+#include <signal.h>
+#include <errno.h>
+// 2021.04.26 - steve requests : end
 
 #define MAXLINE    1024*10
 #define BLOCK      255
@@ -105,6 +111,277 @@ bool gIsSucessAuthResultTrap = false;
 SECURITY_AGENT_HEADER recvHeader;
 RESP_MSG_AUTHENTICATION recvMsgAuthResp;
 RESP_MSG_AUTH_RESULT_ZKEY_PACKET recvMsgAuthResultTrap;
+
+
+// 2021.04.26 - steve requests : start
+// /usr/local/etc/auth  -> config 파일
+// /usr/local/etc/auth/cert -> 인증서 파일
+// /usr/local/etc/auth/key -> 생성되는 key 값 파일 
+// /usr/local/etc/tlsq-dcu.conf
+
+int keep_running = 0;
+int isRunSecurityAgent = 0;
+int authAgentStatus(void);
+int get_authStatus(void);
+void set_authStatus(int status);
+int do_authProgress(void);
+void* threadMsgQ(void* obj);
+void createThreadMsgQ(void);
+
+void signal_handler(int signal)
+{
+	switch(signal)  {
+		case SIGHUP:
+			fprintf(stderr,"Hangup Signal Catched\n");
+			break;
+		case SIGTERM:
+			fprintf(stderr,"Terminate Signal Catched\n");
+			keep_running = 0;
+			break;
+		case SIGINT:
+			fprintf(stderr,"Keyoard Interrupt Signal Catched\n");
+			keep_running = 0;
+			break;			
+    }
+}
+
+int daemonize(void) 
+{
+	pid_t pid;
+	pid_t sid;
+
+    pid = fork();
+
+	if (pid != 0)  {
+		if (pid < 0)  {
+			fprintf(stderr, "daemonize:first fork failed (errno %d)\n", errno);
+      LOG_ERROR("daemonize:first fork failed (errno %d)", errno);
+			return -1;
+		}
+		fprintf(stderr, "daemonize:parent exiting, quit_immediately\n");
+    LOG_DEBUG("daemonize:parent exiting, quit_immediately");
+		fprintf(stderr, "child process id : [%d], parent process id : [%d] \n", pid, getpid());
+    LOG_DEBUG("child process id : [%d], parent process id : [%d]", pid, getpid());
+		exit(0);
+	}
+	
+	fprintf(stderr, "Daemonized process id : [%d]\n", getpid());
+	LOG_DEBUG("Daemonized process id : [%d]", getpid());
+
+  sid = setsid();
+	if(sid < 0)  {
+    exit(0);
+  }
+
+  signal(SIGCHLD, SIG_IGN);
+  signal(SIGTSTP, SIG_IGN);
+  signal(SIGTTOU, SIG_IGN);
+  signal(SIGTTIN, SIG_IGN);
+
+  signal(SIGHUP, signal_handler);
+  signal(SIGTERM, signal_handler);
+  signal(SIGINT, signal_handler);
+
+	return 0;
+}
+
+void createThreadMsgQ(void) {
+  int thr_id = 0;
+  pthread_t threadT;
+  pthread_attr_t thread_attr;
+  pthread_attr_init(&thread_attr);
+  pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
+
+  thr_id = pthread_create(&threadT, &thread_attr, threadMsgQ, (void*)NULL);
+  if (thr_id < 0) {
+    LOG_ERROR("pthread_create(...,threadMsgQ,...) is error");
+  }
+  pthread_attr_destroy(&thread_attr);
+}
+
+void* threadMsgQ(void* obj) {
+  pthread_detach(pthread_self());
+	int dont_fork = 0;
+
+	int msgID;
+	int msgID_req;
+	msgQEvent_context msgQ;
+	msgQEvent_context msgQ_req;
+	int msgq_received;
+	key_t msgKey;
+	key_t msgKey_req;
+	int ret;
+	int exit_code = 0;
+	int send_authStatus;
+
+
+	//fprintf(stdout, "Auth: Servie is started\n");
+  LOG_DEBUG("Auth: Servie is started");
+
+	/* In case we recevie a request to stop (kill -TERM or kill -INT) */
+	keep_running = 1;
+
+	/* Daemonize */
+	if (!dont_fork) {
+		int ret = daemonize();
+		if(ret != 0) {
+			//fprintf(stderr, "Auth: Daemonizing Exiting with code %d\n", ret);
+      LOG_ERROR("Auth: Daemonizing Exiting with code %d\n", ret);
+			exit(1);
+		}		
+	}
+
+
+	msgKey = MSGQ_AUTH_SERVICE_KEY;
+	msgKey_req = MSGQ_AUTH_SERVICE_REQ_KEY;
+
+	memset(&msgQ, 0x00, sizeof(msgQ));
+	memset(&msgQ_req, 0x00, sizeof(msgQ_req));
+
+	msgID = create_msgQEvent(msgKey);
+	//fprintf(stdout, "Auth: Created Message Queue : msgKey = %d, msgID = %d\n", \
+		(int)msgKey, msgID);
+
+  LOG_DEBUG("Auth: Created Message Queue : msgKey = %d, msgID = %d", (int)msgKey, msgID);
+
+	if(msgID == -1) {
+		//fprintf(stderr, "Auth: Message Queue Creation Error ..." );
+    LOG_ERROR("Auth: Message Queue Creation Error ..." );
+		//return -1;
+    exit(1);
+	}	
+
+	msgID_req = create_msgQEvent(msgKey_req);
+	//fprintf(stdout, "Auth: Created Requesting Message Queue : msgKey = %d, msgID = %d\n", \
+		(int)msgKey_req, msgID_req);
+  LOG_DEBUG("Auth: Created Requesting Message Queue : msgKey = %d, msgID = %d", (int)msgKey_req, msgID_req);
+
+	if(msgID_req == -1) {
+		//fprintf(stderr, "Auth: Requesting Message Queue Creation Error ..." );
+    LOG_ERROR("Auth: Requesting Message Queue Creation Error ..." );
+		//return -1;
+    exit(1);
+	}	
+
+	send_authStatus = 0;
+
+	while (keep_running) {
+
+		msgq_received = recv_msgQEvent(msgID_req, &msgQ_req);
+		if (msgq_received > 0) {
+			//fprintf(stdout, "Auth: Received Message Queue Data ...\n");
+			//fprintf(stdout, "Auth:  msg_type = 0x%04X\n", (unsigned int)msgQ_req.msg_type);
+			//fprintf(stdout, "Auth:  msg = %d\n", (int)msgQ_req.msg);
+      LOG_DEBUG("Auth: Received Message Queue Data ...");
+      LOG_DEBUG("Auth:  msg_type = 0x%04X", (unsigned int)msgQ_req.msg_type);
+      LOG_DEBUG("Auth:  msg = %d", (int)msgQ_req.msg);
+
+			if (msgQ_req.msg_type == MSGQ_AUTH_REQ_AGENT_STATUS_EVENT) {
+				//fprintf(stdout, "Auth: Received MSGQ_AUTH_REQ_AGENT_STATUS_EVENT\n");
+        LOG_DEBUG("Auth: Received MSGQ_AUTH_REQ_AGENT_STATUS_EVENT");
+				msgQ.msg = (uint32_t)authAgentStatus();
+				msgQ.msg_type = MSGQ_AUTH_AGENT_STAUS_EVENT;
+				//fprintf(stdout, "Auth: Send MSGQ_AUTH_AGENT_STAUS_EVENT\n");
+				//fprintf(stdout, "Auth: Agent Status = %d\n", (int)msgQ.msg);
+        LOG_DEBUG("Auth: Send MSGQ_AUTH_AGENT_STAUS_EVENT");
+        LOG_DEBUG("Auth: Agent Status = %d", (int)msgQ.msg);
+
+				ret = send_msgQEvent(msgID, &msgQ);
+				if (ret != 0)  {
+					//fprintf(stderr, "Auth: Message Queue Data Sending is failed !!\n");
+          LOG_ERROR("Auth: Message Queue Data Sending is failed !!");
+				}
+			}	
+			
+			if(msgQ.msg_type == MSGQ_TERMINATION_CMD)  {
+				//fprintf(stdout, "Received Message Queue Data : MSGQ_TERMINATION_CMD\n");
+        LOG_DEBUG("Received Message Queue Data : MSGQ_TERMINATION_CMD");
+				keep_running = 0;
+			}
+		}
+
+		if (get_authStatus() != MSGQ_AUTH_DONE)  {
+			//fprintf(stdout, "Auth: Authentication Progressing ... \n");
+      LOG_DEBUG("Auth: Authentication Progressing ...");
+			ret = do_authProgress();
+			send_authStatus = 1;
+		}
+
+		if (send_authStatus) {
+			msgQ.msg = (uint32_t)get_authStatus();
+			msgQ.msg_type = MSGQ_AUTH_STATUS_EVENT;
+			//fprintf(stdout, "Auth: Send MSGQ_AUTH_STATUS_EVENT\n");
+			//fprintf(stdout, "Auth: Auth Status = %d\n", (int)msgQ.msg);
+      LOG_DEBUG("Auth: Send MSGQ_AUTH_STATUS_EVENT");
+      LOG_DEBUG("Auth: Auth Status = %d\n", (int)msgQ.msg);
+			ret = send_msgQEvent(msgID, &msgQ);
+			if (ret != 0)  {
+				//fprintf(stderr, "Auth: Message Queue Data Sending is failed !!\n");
+        LOG_DEBUG("Auth: Message Queue Data Sending is failed !!");
+			}
+			send_authStatus = 0;
+		}
+	}
+
+	//fprintf(stdout, "Auth: Auth Servie is shutdown\n");
+  LOG_DEBUG("Auth: Auth Servie is shutdown");
+	
+	//return exit_code;
+  return NULL;
+}
+
+int authAgentStatus(void) {
+	int status;
+	
+	// Agent Status Checking !!
+  status= isRunSecurityAgent==1?MSGQ_AUTH_AGENT_NORMAL:MSGQ_AUTH_AGENT_NONE;
+	
+	return status;
+}
+
+
+int authStatus = MSGQ_AUTH_NONE;
+
+int get_authStatus(void) {
+	return authStatus;
+}
+
+
+void set_authStatus(int status) {
+	authStatus = status;
+}
+
+
+#define AUTH_SUCCESS	1
+#define AUTH_FAIL		2
+
+
+int do_authProgress(void) {
+	int status = 0;
+
+  reAuthCallback();
+
+	sleep(5);
+
+  if(gIsSucessAuthResultTrap == true) {
+	  status = AUTH_SUCCESS;
+  }
+
+	if (status == AUTH_SUCCESS) {
+		//fprintf(stdout, "Auth: Authentication is Done !! \n");
+    LOG_DEBUG("Auth: Authentication is Done !!");
+		set_authStatus(MSGQ_AUTH_DONE);
+	} else if (status == AUTH_FAIL) {
+		//fprintf(stdout, "Auth: Authentication is Failed !! \n");
+    LOG_ERROR("Auth: Authentication is Failed !!");
+		set_authStatus(MSGQ_AUTH_FAIL);
+	} else {
+    LOG_DEBUG("Auth: Authentication has not done yet !!");
+	}
+
+	return status;
+}
+// 2021.04.26 - steve requests  : end
 
 int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsigned int aaaPort, char* pCallingStationId, unsigned char** ppOutMsg, int* outMsgLen) {
   int i = 0;
@@ -227,8 +504,9 @@ void* threadRecv(void* obj) {
       exit(0);
   }
 
-  while(1)
-  {
+  isRunSecurityAgent = 1; // 2021.04.26 - steve requests
+
+  while(1) {
     //LOG_DEBUG("Server : waiting request [gServerSocket=%d].", gServerSocket);
     //전송 받은 메시지 nbyte 저장
     nbyte = recvfrom(gServerSocket, buf, MAXLINE , 0, (struct sockaddr *)&cliaddr, &addrlen);
@@ -304,7 +582,7 @@ void* threadRecv(void* obj) {
         memcpy(&recvMsgAuthResultTrap.zKey1, &buf[feildIndex], sizeof(recvMsgAuthResultTrap.zKey1));
         feildIndex += sizeof(recvMsgAuthResultTrap.zKey1);
 
-        memcpy(&recvMsgAuthResultTrap.zKey2, &buf[feildIndex], sizeof(recvMsgAuthResultTrap.zKey1));
+        memcpy(&recvMsgAuthResultTrap.zKey2, &buf[feildIndex], sizeof(recvMsgAuthResultTrap.zKey2));
         feildIndex += sizeof(recvMsgAuthResultTrap.zKey2);
 
         memcpy(&usTemp, &buf[feildIndex], sizeof(recvMsgAuthResultTrap.fepCertLen));
@@ -327,6 +605,37 @@ void* threadRecv(void* obj) {
         memcpy(&recvMsgAuthResultTrap.pEmulCert, &buf[feildIndex], recvMsgAuthResultTrap.emulCertLen);
 
         //void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len);
+        // /usr/local/etc/auth  -> config 파일
+        // /usr/local/etc/auth/cert -> 인증서 파일
+        // /usr/local/etc/auth/key -> 생성되는 key 값 파일 
+        FILE* fp = fopen("/usr/local/etc/auth/fepCert.der", "wb");
+        if(fp != NULL) {
+          // size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
+          fwrite(recvMsgAuthResultTrap.pFepCert, 1, recvMsgAuthResultTrap.fepCertLen, fp);
+          fclose(fp);
+          fp = NULL;
+        }
+        fp = fopen("/usr/local/etc/auth/emulCert.der", "wb");
+        if(fp != NULL) {
+          // size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
+          fwrite(recvMsgAuthResultTrap.pEmulCert, 1, recvMsgAuthResultTrap.emulCertLen, fp);
+          fclose(fp);
+          fp = NULL;
+        }
+        fp = fopen("/usr/local/etc/auth/zKey1", "wb");
+        if(fp != NULL) {
+          // size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
+          fwrite(recvMsgAuthResultTrap.zKey1, 1, sizeof(recvMsgAuthResultTrap.zKey1), fp);
+          fclose(fp);
+          fp = NULL;
+        }
+        fp = fopen("/usr/local/etc/auth/zKey2", "wb");
+        if(fp != NULL) {
+          // size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
+          fwrite(recvMsgAuthResultTrap.zKey2, 1, sizeof(recvMsgAuthResultTrap.zKey2), fp);
+          fclose(fp);
+          fp = NULL;
+        }
         setCertAndKeys( gIsSucessAuthResultTrap, 
                         recvMsgAuthResultTrap.pFepCert, recvMsgAuthResultTrap.fepCertLen,
                         recvMsgAuthResultTrap.pEmulCert, recvMsgAuthResultTrap.emulCertLen,
@@ -493,13 +802,17 @@ int main(int argc, char *argv[]) {
 
   //void zmqCommonInit(bool isIaaaClient, int iaaaClientPort, int pullPort);
   //typedef int (*getCertAndKeys_callback)(IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len);
+#if 0 // 2021.04.26 - not used.  
   zmqCommonInit(true, 9000, 9001);
   register_getCertAndKeysCallback(getCertAndKeysCallback);
   register_reAuthCallback(reAuthCallback);
   register_getAuthStateCallback(getAuthStateCallback);
-
+#else
+	LOG_DEBUG("message queue is not used. so it is not working!!! --> msgQ has been used. instead it.");
+#endif
 
   FILE *fp = NULL;
+#if 0  
   fp = fopen("/tmp/tlsq-dcu.conf", "rt");
   if(fp == NULL) {
     LOG_DEBUG("Please create /tmp/tldq-dcu.conf like below.");
@@ -509,6 +822,19 @@ int main(int argc, char *argv[]) {
     LOG_DEBUG("dcu-mac-addr	00-00-b8-27-eb-a5-5c-1d");
     exit(-1);
   }
+
+#else
+  fp = fopen("/usr/local/etc/tlsq-dcu.conf", "rt");
+  if(fp == NULL) {
+    LOG_DEBUG("Please create ./tldq-dcu.conf like below.");
+    LOG_DEBUG("system-title	BMT3020000010");
+    LOG_DEBUG("dcu-id		BMT3020020");
+    LOG_DEBUG("iaaa-server-ip	211.170.81.205");
+    LOG_DEBUG("dcu-mac-addr	00-00-b8-27-eb-a5-5c-1d");
+    exit(-1);
+  }
+#endif
+
 
   while(1) {
     if(fscanf(fp, "%s %s", keyTemp, keyValueTemp) == EOF) {
@@ -546,6 +872,7 @@ int main(int argc, char *argv[]) {
   //serverPort = atoi(argv[1]);
   //securityAgentPort = atoi(argv[2]);
   //strcpy(iaaaServerIPAddr, argv[3]);
+  createThreadMsgQ(); // 2021.04.26 - steve requests
 
   createThreadRecv(SERVER_UDP_PORT_FOR_TRAP);
 
@@ -587,8 +914,9 @@ int main(int argc, char *argv[]) {
 
 
   while(1) {
-        //메시지 전송
+    //메시지 전송
     sleep(5);
+#if 0    
     if(gTransactionId == 1) {
         char* sendBufer = (char*)malloc(sizeof( SECURITY_AGENT_HEADER) + sizeof(REQ_MSG_AUTHENTICATION));
         reqAuthHeader.transactionId = (unsigned int)htonl((uint32_t)gTransactionId++);
@@ -601,6 +929,7 @@ int main(int argc, char *argv[]) {
 
         free(sendBufer);
       }
+#endif      
     //break;
   }
 
