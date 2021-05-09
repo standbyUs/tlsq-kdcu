@@ -13,11 +13,16 @@
 #include <netinet/in.h>
 #include <pthread.h>
 #include <stdbool.h>  // error: unknown type name ‘bool’
-
+#include <netinet/in.h> 
+#include <arpa/inet.h>
 
 #include "tlsq-dcu-logger.h"
 #include "tlsq-dcu-utils.h"
-#include "msg-queue.h"
+
+#define ZMQ_MSG_QUEUE_NOT_USED  0
+#if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
+#include "msg-queue.h"  
+#endif  // #if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
 
 // 2021.04.26 - steve requests : start
 #include "msgQ/msgQ.h"        
@@ -127,6 +132,8 @@ void set_authStatus(int status);
 int do_authProgress(void);
 void* threadMsgQ(void* obj);
 void createThreadMsgQ(void);
+void reAuthCallback();  // 2021.05.09 - warning: implicit declaration of function ‘reAuthCallback’ [-Wimplicit-function-declaration]
+
 
 void signal_handler(int signal)
 {
@@ -211,7 +218,7 @@ void* threadMsgQ(void* obj) {
 	key_t msgKey;
 	key_t msgKey_req;
 	int ret;
-	int exit_code = 0;
+	//int exit_code = 0;  // 2021.05.09 - warning: unused variable ‘exit_code’ [-Wunused-variable]
 	int send_authStatus;
 
 
@@ -239,8 +246,7 @@ void* threadMsgQ(void* obj) {
 	memset(&msgQ_req, 0x00, sizeof(msgQ_req));
 
 	msgID = create_msgQEvent(msgKey);
-	//fprintf(stdout, "Auth: Created Message Queue : msgKey = %d, msgID = %d\n", \
-		(int)msgKey, msgID);
+	//fprintf(stdout, "Auth: Created Message Queue : msgKey = %d, msgID = %d\n", (int)msgKey, msgID);
 
   LOG_DEBUG("Auth: Created Message Queue : msgKey = %d, msgID = %d", (int)msgKey, msgID);
 
@@ -252,8 +258,7 @@ void* threadMsgQ(void* obj) {
 	}	
 
 	msgID_req = create_msgQEvent(msgKey_req);
-	//fprintf(stdout, "Auth: Created Requesting Message Queue : msgKey = %d, msgID = %d\n", \
-		(int)msgKey_req, msgID_req);
+	//fprintf(stdout, "Auth: Created Requesting Message Queue : msgKey = %d, msgID = %d\n", (int)msgKey_req, msgID_req);
   LOG_DEBUG("Auth: Created Requesting Message Queue : msgKey = %d, msgID = %d", (int)msgKey_req, msgID_req);
 
 	if(msgID_req == -1) {
@@ -425,7 +430,8 @@ int makeRequestMsgAuthentication(char* pSysT, char* pDcuId, char* pAaaIp, unsign
 
   // AAA-IP
   struct in_addr addr;
-  inet_aton(pAaaIp, &addr);
+  // int inet_aton(const char *string, struct in_addr *addr);
+  inet_aton(pAaaIp, (struct in_addr *)&addr);
   LOG_DEBUG("addr=%x",  addr.s_addr);
   memcpy(&pMessage[18], &addr.s_addr, sizeof(unsigned int));
   // pMessage[18] = (unsigned char)((addr.s_addr >> 24) & 0x000000ff);
@@ -478,7 +484,7 @@ void* threadRecv(void* obj) {
   char buf[MAXLINE+1];
   int serverPort = 10000;
   int i = 0;
-  int headEnd = 0;
+  //int headEnd = 0;  // 2021.05.09 - warning: unused variable ‘headEnd’ [-Wunused-variable]
   serverPort = (int)obj;
 
   unsigned int unTemp = 0;
@@ -509,7 +515,9 @@ void* threadRecv(void* obj) {
   while(1) {
     //LOG_DEBUG("Server : waiting request [gServerSocket=%d].", gServerSocket);
     //전송 받은 메시지 nbyte 저장
-    nbyte = recvfrom(gServerSocket, buf, MAXLINE , 0, (struct sockaddr *)&cliaddr, &addrlen);
+    // int recvfrom(int s, void *buf, size_t len, int flags, struct sockaddr *from, socklen_t *fromlen); 
+		
+    nbyte = recvfrom(gServerSocket, buf, MAXLINE , 0, (struct sockaddr *)&cliaddr, (socklen_t *)&addrlen);  // 2021.05.09 - warning: pointer targets in passing argument 6 of ‘recvfrom’ differ in signedness [-Wpointer-sign]
     LOG_DEBUG("Server : recvfrom:nbyte=%d", nbyte);
     if(nbyte < 0) {
       LOG_ERROR("recvfrom fail");
@@ -532,27 +540,28 @@ void* threadRecv(void* obj) {
     printf("\n\n");
 
     if(nbyte == 24) { // recvHeader + recvMsgAuthResp
-      memcpy(&unTemp, sizeof(recvHeader.verMsgLen), &buf[0]);
+      // void *memcpy(void *dest, const void *src, size_t n);
+      memcpy(&unTemp, &buf[0], sizeof(recvHeader.verMsgLen));
       recvHeader.verMsgLen = ntohl(unTemp);
       feildIndex += sizeof(recvHeader.verMsgLen);
 
-      memcpy(&unTemp, sizeof(recvHeader.commandCode), &buf[feildIndex]);
+      memcpy(&unTemp, &buf[feildIndex], sizeof(recvHeader.commandCode));
       recvHeader.commandCode = ntohl(unTemp);
       feildIndex += sizeof(recvHeader.commandCode);
 
-      memcpy(&unTemp, sizeof(recvHeader.transactionId), &buf[feildIndex]);
+      memcpy(&unTemp, &buf[feildIndex], sizeof(recvHeader.transactionId));
       recvHeader.transactionId = ntohl(unTemp);
       feildIndex += sizeof(recvHeader.transactionId);
 
-      memcpy(&recvMsgAuthResp.sysT, sizeof(recvMsgAuthResp.sysT), &buf[feildIndex]);
+      memcpy(&recvMsgAuthResp.sysT, &buf[feildIndex], sizeof(recvMsgAuthResp.sysT));
       feildIndex += sizeof(recvMsgAuthResp.sysT);
 
-      memcpy(&unTemp, sizeof(recvMsgAuthResp.resultCode), &buf[feildIndex]);
+      memcpy(&unTemp, &buf[feildIndex], sizeof(recvMsgAuthResp.resultCode));
       recvMsgAuthResp.resultCode = ntohl(unTemp);
 
       LOG_DEBUG("the reponse of request-auth:resultCode=%4x, %s", recvMsgAuthResp.resultCode, recvMsgAuthResp.resultCode==2001?"success":"fail");
     } else {  // recvHeader + recvMsgAuthResultTrap
-      memcpy(&unTemp, sizeof(recvHeader.verMsgLen), &buf[0]);
+      memcpy(&unTemp, &buf[0], sizeof(recvHeader.verMsgLen));
       recvHeader.verMsgLen = ntohl(unTemp);
       feildIndex += sizeof(recvHeader.verMsgLen);
 
@@ -590,7 +599,7 @@ void* threadRecv(void* obj) {
         feildIndex += sizeof(recvMsgAuthResultTrap.fepCertLen);
 
         if(recvMsgAuthResultTrap.pFepCert == NULL) {
-          recvMsgAuthResultTrap.pFepCert = (char*)malloc(recvMsgAuthResultTrap.fepCertLen);
+          recvMsgAuthResultTrap.pFepCert = (unsigned char*)malloc(recvMsgAuthResultTrap.fepCertLen);  // 2021.05.09 -  warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
         }
         memcpy(&recvMsgAuthResultTrap.pFepCert, &buf[feildIndex], recvMsgAuthResultTrap.fepCertLen);
         feildIndex += recvMsgAuthResultTrap.fepCertLen;
@@ -600,7 +609,7 @@ void* threadRecv(void* obj) {
         feildIndex += sizeof(recvMsgAuthResultTrap.emulCertLen);
 
         if(recvMsgAuthResultTrap.pEmulCert == NULL) {
-          recvMsgAuthResultTrap.pEmulCert = (char*)malloc(recvMsgAuthResultTrap.emulCertLen);
+          recvMsgAuthResultTrap.pEmulCert = (unsigned char*)malloc(recvMsgAuthResultTrap.emulCertLen);  // 2021.05.09 - warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
         }
         memcpy(&recvMsgAuthResultTrap.pEmulCert, &buf[feildIndex], recvMsgAuthResultTrap.emulCertLen);
 
@@ -636,18 +645,22 @@ void* threadRecv(void* obj) {
           fclose(fp);
           fp = NULL;
         }
+#if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
         setCertAndKeys( gIsSucessAuthResultTrap, 
                         recvMsgAuthResultTrap.pFepCert, recvMsgAuthResultTrap.fepCertLen,
                         recvMsgAuthResultTrap.pEmulCert, recvMsgAuthResultTrap.emulCertLen,
                         recvMsgAuthResultTrap.zKey1, sizeof(recvMsgAuthResultTrap.zKey1),
                         recvMsgAuthResultTrap.zKey2, sizeof(recvMsgAuthResultTrap.zKey2));
+#endif  // #if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
       } else {
         //void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len);
+#if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
         setCertAndKeys( gIsSucessAuthResultTrap, 
                         NULL, 0,
                         NULL, 0,
                         NULL, 0,
                         NULL, 0);
+#endif  // #if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
       }
     }
   }
@@ -669,11 +682,13 @@ void createThreadRecv(int port) {
   pthread_attr_destroy(&thread_attr);
 }
 
+#if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
 int getCertAndKeysCallback(IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len) {
   LOG_DEBUG("getCertAndKeysCallback(...) is called, but not supported.");
 
   return 0;
 }
+#endif  // // #if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
 
 #if 1
 // simulation
@@ -733,7 +748,7 @@ void reAuthCallback() {
                                   gConfigInfo[DCU_ID].value, 
                                   gConfigInfo[IAAA_SERVER_IPADDR].value, 
                                   SECURITY_AGENT_UDP_PORT, 
-                                  gConfigInfo[DCU_MAC_ADDR].value, &pMsg, &msgLen); // wlan0
+                                  gConfigInfo[DCU_MAC_ADDR].value, (unsigned char**)&pMsg, &msgLen); // wlan0  // 2021.05.09 - warning: passing argument 6 of ‘makeRequestMsgAuthentication’ from incompatible pointer type [enabled by default]
 
     memcpy(sendBufer, &reqAuthHeader, sizeof(SECURITY_AGENT_HEADER));
     memcpy(sendBufer+sizeof(SECURITY_AGENT_HEADER), pMsg, sizeof(REQ_MSG_AUTHENTICATION));
@@ -763,46 +778,55 @@ void reAuthCallback() {
 void getAuthStateCallback() {
   LOG_DEBUG("getAuthStateCallback() is called.");
   if(gIsSucessAuthResultTrap == true) {
+#if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
     setCertAndKeys( gIsSucessAuthResultTrap, 
                     recvMsgAuthResultTrap.pFepCert, recvMsgAuthResultTrap.fepCertLen,
                     recvMsgAuthResultTrap.pEmulCert, recvMsgAuthResultTrap.emulCertLen,
                     recvMsgAuthResultTrap.zKey1, sizeof(recvMsgAuthResultTrap.zKey1),
                     recvMsgAuthResultTrap.zKey2, sizeof(recvMsgAuthResultTrap.zKey2));
+#endif  // #if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
   } else{
 #if 1    
+#if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
       setCertAndKeys( gIsSucessAuthResultTrap, 
                       NULL, 0,
                       NULL, 0,
                       NULL, 0,
                       NULL, 0);
+#endif  // #if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
 #else // simulation
+#if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
       setCertAndKeys( 1, 
                       fepCertBuf, sizeof(fepCertBuf),
                       emulCertBuf, sizeof(emulCertBuf),
                       zKey1Buf, sizeof(zKey1Buf),
                       zKey2Buf, sizeof(zKey2Buf));
+#endif  // #if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
 #endif
   }
 }
 
 int main(int argc, char *argv[]) {
-  char buf[MAXLINE+1];
-  struct sockaddr_in cliaddr;
-  int nbyte, addrlen = sizeof(struct sockaddr);
+  //char buf[MAXLINE+1];  // 2021.05.09 - warning: unused variable ‘buf’ [-Wunused-variable]
+  //struct sockaddr_in cliaddr; // 2021.05.09 - warning: unused variable ‘cliaddr’ [-Wunused-variable]
+  //int nbyte;  // 2021.05.09 - warning: unused variable ‘nbyte’ [-Wunused-variable]
+  int addrlen = sizeof(struct sockaddr);
   //int serverPort = 10000;
 
   struct sockaddr_in securityAgentServerAddr;
   //int securityAgentPort = 13868;
-  char iaaaServerIPAddr[20] = {0,};
+  //char iaaaServerIPAddr[20] = {0,}; // 2021.05.09 - warning: unused variable ‘iaaaServerIPAddr’ [-Wunused-variable]
   int i = 0;
   char keyTemp[50], keyValueTemp[50];
-  
+
+#if 0 // 2021.05.09 - warning: variable ‘reqAuthHeader’ set but not used [-Wunused-but-set-variable]  
   SECURITY_AGENT_HEADER reqAuthHeader;
+#endif  // #if 0  // 2021.05.09 -  warning: variable ‘reqAuthHeader’ set but not used [-Wunused-but-set-variable]
   SetTlsqDcuDebugLevel(TLSQ_DCU_DEBUG_DEBUG);
 
   //void zmqCommonInit(bool isIaaaClient, int iaaaClientPort, int pullPort);
   //typedef int (*getCertAndKeys_callback)(IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len);
-#if 0 // 2021.04.26 - not used.  
+#if ZMQ_MSG_QUEUE_NOT_USED // 2021.05.09 - not used
   zmqCommonInit(true, 9000, 9001);
   register_getCertAndKeysCallback(getCertAndKeysCallback);
   register_reAuthCallback(reAuthCallback);
@@ -889,7 +913,7 @@ int main(int argc, char *argv[]) {
                                 gConfigInfo[DCU_ID].value, 
                                 gConfigInfo[IAAA_SERVER_IPADDR].value, 
                                 SECURITY_AGENT_UDP_PORT, 
-                                gConfigInfo[DCU_MAC_ADDR].value, &pMsg, &msgLen); // wlan0
+                                gConfigInfo[DCU_MAC_ADDR].value, (unsigned char**)&pMsg, &msgLen); // wlan0  // 2021.05.09 - warning: passing argument 6 of ‘makeRequestMsgAuthentication’ from incompatible pointer type [enabled by default]
   if(pMsg == NULL) {
     LOG_ERROR("pMsg is null.");
   }
@@ -906,11 +930,12 @@ int main(int argc, char *argv[]) {
   securityAgentServerAddr.sin_port = htons(SECURITY_AGENT_UDP_PORT); //argv[2]에서 port를 가져옴
   unsigned int verAndMesLength =  0x01 << 24;
   verAndMesLength = verAndMesLength | (sizeof(SECURITY_AGENT_HEADER) + sizeof(REQ_MSG_AUTHENTICATION));
-  reqAuthHeader.verMsgLen = (unsigned int)htonl(verAndMesLength);
 
+#if 0 // 2021.05.09 -  warning: variable ‘reqAuthHeader’ set but not used [-Wunused-but-set-variable]
+  reqAuthHeader.verMsgLen = (unsigned int)htonl(verAndMesLength);
   reqAuthHeader.commandCode = (unsigned int)htonl((uint32_t)0x000000f0);
   reqAuthHeader.transactionId = (unsigned int)htonl((uint32_t)0x00000001);
-
+#endif  // if 0 // 2021.05.09 -  warning: variable ‘reqAuthHeader’ set but not used [-Wunused-but-set-variable]
 
 
   while(1) {

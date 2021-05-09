@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/b64.h
+
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/buffer.c
+stdlib.h
+-
+ctype.h
+-
+b64.h
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/b64.h
+
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/decode.c
+stdio.h
+-
+stdlib.h
+-
+ctype.h
+-
+b64.h
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/b64.h
+
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/encode.c
+stdio.h
+-
+stdlib.h
+-
+b64.h
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/b64.h
+

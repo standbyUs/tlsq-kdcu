@@ -50,6 +50,8 @@ CertKeyInfo gCertKeyInfo;
 
 void* msgQueueServerThread(void);
 void* msgQueueClientThread(void);
+void createThreadMsgQueueServer();	// 2021.05.09 - implicit declaration of function ‘createThreadMsgQueueServer’ [-Wimplicit-function-declaration]
+void createThreadMsgQueueClinet();	// 2021.05.09 - implicit declaration of function ’createThreadMsgQueueClinet’ [-Wimplicit-function-declaration]
 
 void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN char* emuCert, IN int emuCertLen, IN char* zKey1, IN int zKey1Len, IN char* zKey2, IN int zKey2Len) {
 	LOG_DEBUG("setCertAndKeys:fepCertLen=%d, emulCertLen=%d, zKey1Len=%d, zKey2Len=%d", fepCertLen, emuCertLen, zKey1Len, zKey2Len);
@@ -135,10 +137,10 @@ void setCertAndKeys(IN bool authState, IN char* fepCert, IN int fepCertLen, IN c
 	char *enczKey2 = NULL;
 
 	if(gCertKeyInfo.state) {
-		encFepCert = b64_encode(gCertKeyInfo.fepCert, gCertKeyInfo.fepCertLen);
-		encEmulatorCert = b64_encode(gCertKeyInfo.emulatorCert, gCertKeyInfo.emulatorCertLen);
-		encZKey1 = b64_encode(gCertKeyInfo.zKey1, gCertKeyInfo.zKey1Len);
-		enczKey2 = b64_encode(gCertKeyInfo.zKey2, gCertKeyInfo.zKey2Len);
+		encFepCert = b64_encode((unsigned char*)gCertKeyInfo.fepCert, gCertKeyInfo.fepCertLen);	// 2021.05.09 - warning: pointer targets in passing argument 1 of ‘b64_encode’ differ in signedness [-Wpointer-sign]
+		encEmulatorCert = b64_encode((unsigned char*)gCertKeyInfo.emulatorCert, gCertKeyInfo.emulatorCertLen);	// 2021.05.09 - warning: pointer targets in passing argument 1 of ‘b64_encode’ differ in signedness [-Wpointer-sign]
+		encZKey1 = b64_encode((unsigned char*)gCertKeyInfo.zKey1, gCertKeyInfo.zKey1Len);	// 2021.05.09 - warning: pointer targets in passing argument 1 of ‘b64_encode’ differ in signedness [-Wpointer-sign]
+		enczKey2 = b64_encode((unsigned char*)gCertKeyInfo.zKey2, gCertKeyInfo.zKey2Len);	// 2021.05.09 - warning: pointer targets in passing argument 1 of ‘b64_encode’ differ in signedness [-Wpointer-sign]
 
 		json_object *fepCert = json_object_new_string(encFepCert);
 		json_object_object_add(kdcuMessageObj, "fepCert", fepCert);
@@ -232,7 +234,7 @@ void getAuthState() {
 	zstr_send (gpZsockServer, outStream);
 
 	json_object_put(rootObj);
-	return outStream;
+	return;	// 2021.05.09 - warning: ‘return’ with a value, in function returning void [enabled by default]
 }
 
 char* msgQueueAliveEncoder() {
@@ -267,7 +269,7 @@ int msgQueueParser(char* recvData) {
 	json_object *rootObj, *kdcuMessageObj;
 	json_object *commandVal;
 	json_object *authState, *strVal, *intVal;
-	char* pStrValue = NULL;
+	//char* pStrValue = NULL;	// 2021.05.09 - warning: unused variable ‘pStrValue’ [-Wunused-variable]
 			
 	/* JSON type의 데이터를 읽는다. */
 	rootObj = json_tokener_parse(recvData);
@@ -321,10 +323,10 @@ int msgQueueParser(char* recvData) {
 			int zKey2Len = json_object_get_int(intVal);
 			LOG_DEBUG("msgQueueParser:zKey2Len = %d",  zKey2Len);
 
-			char *decFepCert = b64_decode(pFepCert, strlen(pFepCert));
-			char *decEmulCert = b64_decode(pEmulatorCert, strlen(pEmulatorCert));
-			char *decZKey1 = b64_decode(pZKey1, strlen(pZKey1));
-			char *decZKey2 = b64_decode(pZKey2, strlen(pZKey2));
+			char *decFepCert = (char*)b64_decode((char*)pFepCert, strlen(pFepCert));	// 2021.05.9 - warning: pointer targets in initialization differ in signedness [-Wpointer-sign]
+			char *decEmulCert = (char*)b64_decode((char*)pEmulatorCert, strlen(pEmulatorCert));	// 2021.05.9 - warning: pointer targets in initialization differ in signedness [-Wpointer-sign]
+			char *decZKey1 = (char*)b64_decode((char*)pZKey1, strlen(pZKey1));	// 2021.05.9 - warning: pointer targets in initialization differ in signedness [-Wpointer-sign]
+			char *decZKey2 = (char*)b64_decode((char*)pZKey2, strlen(pZKey2));	// 2021.05.9 - warning: pointer targets in initialization differ in signedness [-Wpointer-sign]
 
 			if(gpGetCertAndKeysCallback) {
 				gpGetCertAndKeysCallback(bAuthState, decFepCert, fepCertLen, decEmulCert, emulCertLen, decZKey1, zKey1Len, decZKey2, zKey2Len);
@@ -376,7 +378,7 @@ void zmqCommonInit(bool isIaaaClient, int iaaaClientPort, int pullPort) {
 		if(gpAuth == NULL) {
 			LOG_ERROR("dataloggerClientThread:gpAuth is NULL");
 			pthread_mutex_unlock(&gMutex_auth);
-			return NULL;
+			return;	// 2021.05.09 - warning: ‘return’ with a value, in function returning void [enabled by default]
 		}
 	}
 	memset(&gCertKeyInfo, 0, sizeof(CertKeyInfo));
@@ -415,7 +417,7 @@ void createThreadMsgQueueServer() {
 
 	pthread_attr_init(&thread_attr);
 	pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
-	thr_id = pthread_create(&threadT, &thread_attr, msgQueueServerThread, NULL);
+	thr_id = pthread_create(&threadT, &thread_attr, msgQueueServerThread, (void*)NULL);	// 2021.05.09 - passing argument 3 of ‘pthread_create’ from incompatible pointer type [enabled by default]
 	pthread_attr_destroy(&thread_attr);
 
 	if (thr_id < 0) {
@@ -430,7 +432,7 @@ void createThreadMsgQueueClinet() {
 
 	pthread_attr_init(&thread_attr);
 	pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
-	thr_id = pthread_create(&threadT, &thread_attr, msgQueueClientThread, NULL);
+	thr_id = pthread_create(&threadT, &thread_attr, msgQueueClientThread, (void*)NULL);	// 2021.05.09 - passing argument 3 of ‘pthread_create’ from incompatible pointer type [enabled by default]
 	pthread_attr_destroy(&thread_attr);
 
 	if (thr_id < 0) {
@@ -471,15 +473,15 @@ void* msgQueueServerThread(void)
 	LOG_DEBUG("[Server] - msgQueueServerThread:bindUrl=%s", bindUrl);
 
 
-	int ret = zsock_bind (gpZsockServer, bindUrl);
+	int ret = zsock_bind (gpZsockServer, (char*)&bindUrl[0]);	// 2021.05.09 - format not a string literal and no format arguments [-Wformat-security]
 	LOG_DEBUG("[Server] - msgQueueServerThread:zsock_bind() return value=%d", ret);
 
 	LOG_DEBUG("[Server] - msgQueueServerThread:Ironhouse test starts");
 
-	int i = 0;
-	char* pSendBuffer = NULL;
-	unsigned int count = 0;
-	unsigned int keepTime = 0;
+	//int i = 0;					// 20021.05.09 - warning: unused variable ‘i’ [-Wunused-variable]
+	//char* pSendBuffer = NULL;		// 20021.05.09 - warning: unused variable ‘pSendBuffer’ [-Wunused-variable]
+	//unsigned int count = 0;		// 20021.05.09 - warning: unused variable ‘count’ [-Wunused-variable]
+	//unsigned int keepTime = 0;	// 20021.05.09 - warning: unused variable ‘keepTime’ [-Wunused-variable]
 	return NULL;
 
 	while(1) {
@@ -549,12 +551,12 @@ void* msgQueueClientThread(void)
 		sprintf(oppositServerURL, "tcp://127.0.0.1:%d", gIaaaClientMsgQueuePort);
 	}
 
-	zsock_connect (client, oppositServerURL);
+	zsock_connect (client, (char*)&oppositServerURL[0]);	// 2021.05.09 - format not a string literal and no format arguments [-Wformat-security]
   
 	LOG_DEBUG("[Client] - msgQueueClientThread:Ironhouse test starts");
 
 	char *message = NULL;
-	unsigned int count = 0;
+	//unsigned int count = 0;	// 2021.05.09 - unused variable ‘count’ [-Wunused-variable]
 	while(1) {		
 		if(gProcessClose == true) {
 			LOG_DEBUG("[Client] - msgQueueClientThread:this client process will be terminated....");

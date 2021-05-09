@@ -1,0 +1,3 @@
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/build-linux/CMakeFiles/edit_cache.dir
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/build-linux/CMakeFiles/rebuild_cache.dir
+/media/alex/ex-hard/tlsq/kdcu/tlsq-kdcu/src/common/b64.c/build-linux/CMakeFiles/b64c.dir
